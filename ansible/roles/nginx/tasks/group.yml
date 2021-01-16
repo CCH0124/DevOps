@@ -1,0 +1,4 @@
+- name: create nginx group
+  group: 
+    name: nginx
+    gid: 80

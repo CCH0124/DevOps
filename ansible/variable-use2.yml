@@ -1,0 +1,18 @@
+---
+- hosts: webserver
+  remote_user: cch
+  become: true
+  become_method: sudo
+  vars:
+    - pkname: nginx
+    - pkname2: tree
+  tasks:
+    - name: install httpd package
+      apt: name={{ pkname }}
+    - name: install tree package
+      apt: name={{ pkname2 }}
+    - name: start service
+      systemd: 
+        name: "{{ pkname }}"
+        state: started 
+        enabled: yes

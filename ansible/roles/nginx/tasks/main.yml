@@ -1,0 +1,5 @@
+- include: group.yml
+- include: user.yml
+- include: apt.yml
+- include: template.yml
+- include: service-start.yml

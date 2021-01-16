@@ -1,0 +1,7 @@
+{% for conf in confs %}
+server{
+	listen {{ conf.port }}
+	servername {{ conf.name }}
+	documentroot {{ conf.rootdir }}
+}
+{% endfor %}

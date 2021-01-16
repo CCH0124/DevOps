@@ -1,0 +1,12 @@
+---
+- hosts: webserver
+  remote_user: cch
+  become: true    
+  become_method: sudo
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: install nginx
+      apt: name={{ var1 }}
+    - name: create file
+      file: name=./{{ var2 }}.log state=touch

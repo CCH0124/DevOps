@@ -1,0 +1,22 @@
+---
+- hosts: webserver
+  remote_user: cch
+  become: true    
+  become_method: sudo
+  vars:
+    confs:
+      - web1:
+        port: 90
+        name: web1.cch.com
+        rootdir: /data/website1
+      - web2:
+        port: 91
+        name: web2.cch.com
+        rootdir: /data/website2
+      - web3:
+        port: 92
+        name: web3.cch.com
+        rootdir: /data/website3
+  tasks:
+    - name: nginx conf copy
+      template: src=./templates/for-map.conf.j2 dest=./for-map.conf

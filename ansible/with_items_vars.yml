@@ -1,0 +1,20 @@
+---
+- hosts: all
+  remote_user: cch
+  become: true    
+  become_method: sudo
+
+  tasks:
+    - name: create some groups
+      group: name={{ item }}
+      with_items:
+        - g1
+        - g2
+        - g3
+    - name: create some user
+      user: name={{ item.name }} group={{ item.group }}
+      with_items:
+        - { name: 'user1', group: 'g1' }
+        - { name: 'user2', group: 'g2' }
+        - { name: 'user3', group: 'g3' }
+

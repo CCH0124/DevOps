@@ -1,0 +1,13 @@
+---
+- hosts: webserver
+  remote_user: cch
+  become: true    
+  become_method: sudo
+  vars:
+    ports:
+      - 90
+      - 91
+      - 92
+  tasks:
+    - name: nginx conf copy
+      template: src=./templates/for.conf.j2 dest=./for.conf

@@ -1,0 +1,9 @@
+---
+- hosts: webserver
+  remote_user: cch
+
+  tasks:
+    - name: install httpd package
+      apt: name={{ pkname }}
+    - name: start service
+      service: name={{ pkname }} state=started enable=yes

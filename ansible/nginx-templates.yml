@@ -1,0 +1,23 @@
+---
+- hosts: webserver
+  remote_user: cch
+  become: true    
+  become_method: sudo
+  
+  tasks:
+    - name: install nginx
+      apt: name=nginx
+    - name: copy templates
+      template: src=./templates/nginx.conf.j2 dest=/etc/nginx/nginx.conf
+      notify: restart nginx
+    - name: start service
+      systemd: 
+        name: nginx
+        state: started 
+        enabled: yes
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes

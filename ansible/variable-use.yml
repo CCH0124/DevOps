@@ -1,0 +1,14 @@
+---
+- hosts: webserver
+  remote_user: cch
+  become: true
+  become_method: sudo
+
+  tasks:
+    - name: install httpd package
+      apt: name={{ pkname }}
+    - name: start service
+      systemd: 
+        name: "{{ pkname }}"
+        state: started 
+        enabled: yes

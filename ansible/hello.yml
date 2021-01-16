@@ -1,0 +1,6 @@
+---
+- hosts: webserver
+  remote_user: cch
+  tasks:
+    - name: hello
+      command: hostname # command 模組
