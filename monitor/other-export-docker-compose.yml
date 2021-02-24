@@ -1,0 +1,31 @@
+version: '3.6'
+services:
+  nginxexport:
+    image: nginx/nginx-prometheus-exporter
+    container_name: nginxexport
+    command: -nginx.scrape-uri http://192.168.101.129/metrics
+    expose:
+      - "9113"
+    restart: unless-stopped
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitor"
+
+  postgresql-exporter:
+    image: wrouesnel/postgres_exporter
+    container_name: postgresqlexporter
+    expose:
+      - 9187
+    restart: unless-stopped
+    networks:
+      - monitor-net 
+    environment:
+      - DATA_SOURCE_NAME="postgresql://<DB_USER_NAME>:<PASSWORD>@192.168.101.129:5432/<DB_NAME>?sslmode=disable"
+    labels:
+      org.label-schema.group: "monitor"
+
+networks:
+  monitor-net:
+    external:
+      name: monitor_monitor-net 

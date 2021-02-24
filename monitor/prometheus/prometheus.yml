@@ -1,0 +1,42 @@
+global:
+  scrape_interval: 5s # 多久獲取一次目標
+  evaluation_interval: 15s # 多久評估一次規則
+#  scrape_timeout: 5s # Can not > scrape_interval`
+#  query_log_file: /prometheus/query.log
+
+scrape_configs:
+  - job_name: 'nodeexporter'
+    static_configs:
+      - targets: ['node_exporter:9100']
+        labels:
+          group: 'local'
+
+#  - job_name: 'docker'
+#    static_configs:
+#      - targets: ['192.168.101.129:9323']
+#        labels:
+#          group: 'local'
+
+  - job_name: 'prometheus'
+    scrape_interval: 10s
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          group: 'local'
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+        labels:
+          group: 'local'
+#  - job_name: "nginxexport"
+#    static_configs:
+#      - targets: ["nginxexport:9113"]
+#        labels:
+#          group: 'local'
+  - job_name: 'postgresql-exporter'
+    static_configs:
+      - targets: ['postgresqlexporter:9187']
+        labels:
+          group: 'local'
+          service: 'db'
+  
