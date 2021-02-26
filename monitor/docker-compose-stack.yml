@@ -2,7 +2,7 @@ version: '3.6'
 services:
   prometheus:
     image: prom/prometheus
-    container_name: prometheus
+    hostname: prometheus
     volumes:
       - ./prometheus:/etc/prometheus
       - prometheus_pv:/prometheus
@@ -14,9 +14,6 @@ services:
 #      - '--web.listen-address=0.0.0.0:9090'
       - '--storage.tsdb.retention.time=24h'
       - '--web.enable-lifecycle'
-    restart: unless-stopped
-    expose:
-      - "9090"
     ports:
       - 9090:9090
     networks:
@@ -27,26 +24,38 @@ services:
       - grafana
       - nodeexporter
       - cadvisor
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+
   grafana:
     image: grafana/grafana
-    container_name: grafana
+    hostname: grafana
     user: "472"
     volumes:
       - grafana_pv:/var/lib/grafana # docker volume create grafana_pv
       - ./grafana/provisioning:/etc/grafana/provisioning
     env_file:
       - .env.grfana
-    restart: unless-stopped
     ports:
       - 3000:3000
     networks:
       - monitor-net
     labels:
       org.label-schema.group: "monitor"
+    deploy:
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
 
   nodeexporter:
     image: prom/node-exporter
-    container_name: node_exporter
+    hostname: node_exporter
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -56,35 +65,36 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
-    restart: unless-stopped
-    expose:
-      - 9100
-    network_mode: host
-        #    networks:
-        #- monitor-net
+    networks:
+      - monitor-net
     labels:
       org.label-schema.group: "monitor"
+    deploy:
+      mode: global
+      restart_policy:
+          condition: on-failure
 
   cadvisor:
     image: gcr.io/google-containers/cadvisor
-    container_name: cadvisor
+    hostname: cadvisor
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
-    restart: unless-stopped
-    expose:
-      - 8080
-    network_mode: host
-        #networks:
-        #- monitor-net
+    networks:
+      - monitor-net
     labels:
       org.label-schema.group: "monitor"
+    deploy:
+      mode: global
+      restart_policy:
+          condition: on-failure
 
 networks:
   monitor-net:
-    driver: bridge
+    external:
+      name: monitor
 
 volumes:
     prometheus_pv: {}
