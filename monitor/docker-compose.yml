@@ -18,7 +18,7 @@ services:
     expose:
       - "9090"
     ports:
-      - 3010:9090
+      - 9090:9090
     networks:
       - monitor-net
     labels:
