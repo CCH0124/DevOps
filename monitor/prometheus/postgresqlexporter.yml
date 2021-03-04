@@ -1,0 +1,6 @@
+- targets:
+    - 192.168.101.120
+  labels:
+    env: dev
+    role: db
+    __metrics_path__: /dbmetrics

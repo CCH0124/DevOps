@@ -1,0 +1,11 @@
+- targets:
+    - cadvisor:8080
+  labels:
+    env: local 
+
+- targets:
+    - 192.168.101.120
+  labels:
+    env: dev
+    role: container 
+    __metrics_path__: /containermetrics

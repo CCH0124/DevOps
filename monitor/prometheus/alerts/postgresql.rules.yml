@@ -1,0 +1,74 @@
+groups:
+
+- name: PostgreSQL
+  rules:
+###############################PostgreSQL#######################################
+# Postgresql instance is down
+  - alert: PostgresqlDown
+    expr: pg_up == 0
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Postgresql down (instance {{ $labels.instance }})
+      description: Postgresql instance is down\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+# PostgreSQL replication lag is going up (> 30s)
+  - alert: PostgresqlReplicationLag
+    expr: pg_replication_lag > 30 and ON(instance) pg_replication_is_replica == 1
+    for: 0m
+    labels:
+      severity: critical
+    annotations:
+      summary: Postgresql replication lag (instance {{ $labels.instance }})
+      description: PostgreSQL replication lag is going up (> 30s)\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+# PostgreSQL instance has too many connections (> 80%).
+  - alert: PostgresqlTooManyConnections
+    expr: sum by (datname) (pg_stat_activity_count{datname!~"template.*|postgres"}) > pg_settings_max_connections * 0.8
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Postgresql too many connections (instance {{ $labels.instance }})
+      description: PostgreSQL instance has too many connections (> 80%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+# PostgreSQL has dead-locks
+  - alert: PostgresqlDeadLocks
+    expr: increase(pg_stat_database_deadlocks{datname!~"template.*|postgres"}[1m]) > 5
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Postgresql dead locks (instance {{ $labels.instance }})
+      description: PostgreSQL has dead-locks\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+# PostgreSQL executes slow queries
+  - alert: PostgresqlSlowQueries
+    expr: pg_slow_queries > 0
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: Postgresql slow queries (instance {{ $labels.instance }})
+      description: PostgreSQL executes slow queries\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+# Ratio of transactions being aborted compared to committed is > 2 %
+  - alert: PostgresqlHighRollbackRate
+    expr: rate(pg_stat_database_xact_rollback{datname!~"template.*"}[3m]) / rate(pg_stat_database_xact_commit{datname!~"template.*"}[3m]) > 0.08
+    for: 0m
+    labels:
+      severity: warning
+    annotations:
+      summary: Postgresql high rollback rate (instance {{ $labels.instance }})
+      description: Ratio of transactions being aborted compared to committed is > 8 %\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}
+
+# Postgres Replication lag (in bytes) is high
+#  - alert: PostgresqlReplicationLagBytes
+#    expr: (pg_xlog_position_bytes and pg_replication_is_replica == 0) - GROUP_RIGHT(instance) (pg_xlog_position_bytes and pg_replication_is_replica == 1) > 1e+09
+#    for: 0m
+#    labels:
+#      severity: critical
+#    annotations:
+#      summary: Postgresql replication lag bytes (instance {{ $labels.instance }})
+#      description: Postgres Replication lag (in bytes) is high\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}

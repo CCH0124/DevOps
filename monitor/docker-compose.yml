@@ -27,6 +27,19 @@ services:
       - grafana
       - nodeexporter
       - cadvisor
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager:/prometheus
+      - alertmanager_pv:/data
+    command:
+      - '--config.file=/prometheus/alertmanager.yml'
+      - '--storage.path=/data'
+    networks:
+      - monitor-net
+
   grafana:
     image: grafana/grafana
     container_name: grafana
@@ -66,7 +79,7 @@ services:
       org.label-schema.group: "monitor"
 
   cadvisor:
-    image: gcr.io/google-containers/cadvisor
+    image: google/cadvisor 
     container_name: cadvisor
     volumes:
       - /:/rootfs:ro
@@ -89,3 +102,4 @@ networks:
 volumes:
     prometheus_pv: {}
     grafana_pv: {}   
+    alertmanager_pv: {}

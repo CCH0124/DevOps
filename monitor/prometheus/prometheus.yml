@@ -4,23 +4,46 @@ global:
 #  scrape_timeout: 5s # Can not > scrape_interval`
 #  query_log_file: /prometheus/query.log
 
+rule_files:
+  - alerts/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+      - targets:
+        # Alertmanager's default port is 9093
+        - alertmanager:9093
+
 scrape_configs:
   - job_name: 'nodeexporter'
-#    static_configs:
-#      - targets: ['192.168.134.149:9100']
-#        labels:
-#          group: 'local'
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/nodeexporter.yml
+        refresh_interval: 3m 
+  - job_name: 'cadvisor'
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/cadvisor.yml
+        refresh_interval: 3m 
+  - job_name: 'postgresql-exporter'
+    metrics_path: /metrics
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/postgresqlexporter.yml
+        refresh_interval: 3m 
 
-    dns_sd_configs: # for swarm
-    - names:
-      - 'tasks.nodeexporter'
-      type: 'A'
-      port: 9100
+#  - job_name: 'pushgateway'
+#    scrape_interval: 10s
+#    honor_labels: true
+#    static_configs:
+#      - targets: ['pushgateway:9091']
 
 
   - job_name: 'docker'
     static_configs:
-      - targets: ['192.168.134.149:9323']
+      - targets: ['192.168.101.129:9323']
         labels:
           group: 'local'
 
@@ -30,28 +53,4 @@ scrape_configs:
       - targets: ['localhost:9090']
         labels:
           group: 'local'
-
-  - job_name: "cadvisor"
-#    static_configs:
-#      - targets: ["192.168.134.149:8080"]
-#        labels:
-#          group: 'local'
-    dns_sd_configs: # for swarm
-    - names:
-      - 'tasks.cadvisor'
-      type: 'A'
-      port: 8080
-
-#  - job_name: "nginxexport"
-#    static_configs:
-#      - targets: ["nginxexport:9113"]
-#        labels:
-#          group: 'local'
-
-#  - job_name: 'postgresql-exporter'
-#    static_configs:
-#      - targets: ['postgresqlexporter:9187']
-#        labels:
-#          group: 'local'
-#          service: 'db'
   

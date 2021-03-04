@@ -1,0 +1,11 @@
+- targets:
+    - nodeexporter:9100
+  labels:
+    env: host
+
+- targets:
+    - 192.168.101.120
+  labels:
+    env: dev
+    role: host
+    __metrics_path__: /hostmetrics
