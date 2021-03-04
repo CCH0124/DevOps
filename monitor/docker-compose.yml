@@ -39,6 +39,9 @@ services:
       - '--storage.path=/data'
     networks:
       - monitor-net
+    labels:
+      org.label-schema.group: "monitor"
+      org.label-schema.service: "alert"
 
   grafana:
     image: grafana/grafana
