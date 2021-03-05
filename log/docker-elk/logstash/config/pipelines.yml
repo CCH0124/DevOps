@@ -1,0 +1,11 @@
+#- pipeline.id: file-csv
+#  queue.type: persisted
+#  path.config: "/usr/share/logstash/pipeline/csv.conf"
+#- pipeline.id: filebeat
+#  queue.type: persisted
+#  path.config: "/usr/share/logstash/pipeline/filebeat.conf"
+#- pipeline.id: metricbeat
+#  queue.type: persisted
+#  path.config: "/usr/share/logstash/pipeline/metricbeat.conf"
+
+
