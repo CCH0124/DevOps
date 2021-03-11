@@ -1,0 +1,44 @@
+version: '3.7'
+services:
+  query: 
+    container_name: jaeger_query
+    image: jaegertracing/jaeger-query
+    environment: 
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://192.168.101.129:3001
+      - ES_TAGS_AS_FIELDS_ALL=true
+      - LOG_LEVEL=debug
+    ports:
+      - 3006:16686
+    restart: on-failure
+  collector: 
+    container_name: jaeger_collector
+    image: jaegertracing/jaeger-opentelemetry-collector
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - LOG_LEVEL=debug
+    command: [
+      "--es.server-urls=http://192.168.101.129:3001",
+      "--es.num-shards=1",
+      "--es.num-replicas=0"
+    ]
+    expose:
+      - 14250 # Jaeger grpc receiver
+      - 14267 # 
+    ports:
+      - 3009:14268/tcp # Jaeger http thrift receiver
+    restart: on-failure
+  agent: 
+    container_name: jaeger_agent
+    image: jaegertracing/jaeger-opentelemetry-agent
+    command: ["--reporter.grpc.host-port=jaeger-collector:14250", "--log-level=debug"]
+    expose:
+      - 5775
+      - 6831/udp
+      - 6832/udp
+    ports:
+      - 3008:5778/tcp
+    restart: on-failure
+    depends_on:
+      - collector
+  
