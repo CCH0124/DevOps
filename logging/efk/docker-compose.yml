@@ -1,0 +1,72 @@
+version: '3.6'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION} 
+    container_name: elasticsearch 
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch_pv
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    restart: unless-stopped
+    environment:
+      ES_JAVA_OPTS: "-Xms1024m -Xms1024m"
+    networks:
+      - efk
+    deploy:
+      resources:
+        limits:
+          memory: 2048m
+        reservations:
+          memory: 1024m
+
+  cerebro:
+    image: yannart/cerebro
+    container_name: cerebro
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+    networks:
+      - efk
+    depends_on:
+      - elasticsearch
+
+  dejavu:
+    image: appbaseio/dejavu:latest
+    container_name: dejavu
+    ports:
+      - "1358:1358"
+    restart: unless-stopped
+    networks:
+      - efk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
+    container_name: kibana
+    volumes:
+      - type: bind
+        source: ./kibana/config/
+        target: /usr/share/kibana/config
+        read_only: true
+    ports:
+      - "5601:5601"
+    restart: unless-stopped
+    networks:
+      - efk
+    depends_on:
+      - elasticsearch
+
+networks:
+  efk:
+    driver: bridge
+
+volumes:
+  elasticsearch_pv: {}

@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  fluent-bit:
+    image: fluent/fluent-bit:1.7.0
+    container_name: fluent-bit
+    volumes:
+      - type: bind
+        source: ./fluent/conf
+        target: /fluent-bit/etc
+        read_only: true
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /fluentd/log/containers
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+      - 2020:2020
+    deploy:
+      resources:
+        limits:
+          cpus: '0.05'
+          memory: 60Mi
+        reservations:
+          cpus: '0.005'
+          memory: 10Mi
