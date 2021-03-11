@@ -19,19 +19,19 @@ services:
       - LOG_LEVEL=debug
     command: [
       "--es.server-urls=http://192.168.101.129:3001",
-      "--es.num-shards=1",
+      "--es.num-shards=3",
       "--es.num-replicas=0"
     ]
     expose:
-      - 14250 # Jaeger grpc receiver
-      - 14267 # 
+      - 14267 
     ports:
       - 3009:14268/tcp # Jaeger http thrift receiver
+      - 9000:14250/tcp # Jaeger grpc receiver
     restart: on-failure
   agent: 
     container_name: jaeger_agent
     image: jaegertracing/jaeger-opentelemetry-agent
-    command: ["--reporter.grpc.host-port=jaeger-collector:14250", "--log-level=debug"]
+    command: ["--reporter.grpc.host-port=jaeger_collector:14250", "--log-level=debug"]
     expose:
       - 5775
       - 6831/udp
