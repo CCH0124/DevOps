@@ -18,7 +18,7 @@ services:
     expose:
       - "9090"
     ports:
-      - 9090:9090
+      - 3010:9090
     networks:
       - monitor-net
     labels:
@@ -26,7 +26,22 @@ services:
     depends_on:
       - grafana
       - nodeexporter
-      - cadvisor
+      - pushgateway
+      - alertmanager
+#      - cadvisor
+  
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    restart: unless-stopped
+    expose:
+      - 9091
+    ports:
+      - 8080:9091
+    networks:
+      - monitor-net
+    labels:
+      org.label-schema.group: "monitor"
 
   alertmanager:
     image: prom/alertmanager
@@ -81,22 +96,22 @@ services:
     labels:
       org.label-schema.group: "monitor"
 
-  cadvisor:
-    image: google/cadvisor 
-    container_name: cadvisor
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
-    restart: unless-stopped
-    expose:
-      - 8080
-    network_mode: host
-        #networks:
-        #- monitor-net
-    labels:
-      org.label-schema.group: "monitor"
+#  cadvisor:
+#    image: google/cadvisor 
+#    container_name: cadvisor
+#    volumes:
+#      - /:/rootfs:ro
+#      - /var/run:/var/run:rw
+#      - /sys:/sys:ro
+#      - /var/lib/docker:/var/lib/docker:ro
+#    restart: unless-stopped
+#    expose:
+#      - 8080
+#    network_mode: host
+#       networks:
+#         - monitor-net
+#    labels:
+#      org.label-schema.group: "monitor"
 
 networks:
   monitor-net:
