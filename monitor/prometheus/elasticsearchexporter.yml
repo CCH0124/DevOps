@@ -1,0 +1,5 @@
+- targets:
+    - 192.168.101.129:3004
+  labels:
+    env: log
+    role: storage
