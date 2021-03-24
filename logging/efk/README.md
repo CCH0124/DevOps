@@ -16,3 +16,6 @@ socket 用於在 docker-compose 上配置將 log 透過 socket 方式傳至 flue
         fluentd-address: 192.168.101.129:24224
         tag: web-backend
 ```
+
+## 注意
+1. 配置檔名稱需要是 fluent-bit.conf，否則會出現無法讀取到檔案的問題
