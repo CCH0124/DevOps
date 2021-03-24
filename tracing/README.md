@@ -1,0 +1,1 @@
+此 docker-compose 需與 elasticsearch 做結合，才能做到儲存 span 的效果。基於簡潔，因此這邊不提供 Elasticsearch 架設配置檔，可從 logging 資料夾下的 EFK 來得知如何架設 Elasticsearch。而從 [spring boot](https://github.com/CCH0124/spring-boot-training/tree/main/psql-spring-boot) 範例中 docker-compose 得知要如何進行配置以獲得 API 追蹤功能。
