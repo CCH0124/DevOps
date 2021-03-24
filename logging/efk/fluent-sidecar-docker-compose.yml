@@ -5,12 +5,13 @@ services:
     container_name: fluent-bit
     volumes:
       - type: bind
-        source: ./fluent/conf
+        source: ./fluent/conf/socket
         target: /fluent-bit/etc
         read_only: true
-      - type: bind
-        source: /var/lib/docker/containers
-        target: /fluentd/log/containers
+# IF use read file
+#      - type: bind
+#        source: /var/lib/docker/containers
+#        target: /fluentd/log/containers
     ports:
       - 24224:24224
       - 24224:24224/udp
@@ -19,7 +20,7 @@ services:
       resources:
         limits:
           cpus: '0.05'
-          memory: 60Mi
+          memory: 60M
         reservations:
           cpus: '0.005'
-          memory: 10Mi
+          memory: 10M
