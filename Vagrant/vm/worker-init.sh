@@ -1,0 +1,3 @@
+#!/bin/sh
+echo Swarm Join...
+docker swarm join --token $(cat /vagrant/worker_token) 192.168.100.200:2377
