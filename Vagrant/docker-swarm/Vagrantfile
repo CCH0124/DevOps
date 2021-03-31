@@ -1,0 +1,31 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-20.04"
+
+
+  config.vm.define :manager, primary: true  do |manager|
+    manager.vm.network "public_network", bridge: "Wi-Fi",ip: "192.168.100.200"
+    manager.vm.hostname = "manager"
+    manager.vm.synced_folder ".", "/vagrant"
+    manager.vm.provision "shell", path: "docker-install.sh", privileged: true
+    manager.vm.provision "shell", path: "manager-init.sh"
+    manager.vm.provider "virtualbox" do |vb|
+      vb.name = "manager"
+      vb.memory = "2048"
+      vb.cpus = 1
+    end
+  end
+  (1..2).each do |i|
+    config.vm.define "worker0#{i}" do |node| 
+      node.vm.network "public_network", bridge: "Wi-Fi", ip: "192.168.100.20#{i}"
+      node.vm.hostname = "worker0#{i}"
+      node.vm.synced_folder ".", "/vagrant"
+      node.vm.provision "shell", path: "docker-install.sh", privileged: true
+      node.vm.provision "shell", path: "worker-init.sh"
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "worker0#{i}"
+        vb.memory = "2048"
+        vb.cpus = 2
+      end
+    end
+  end
+end
