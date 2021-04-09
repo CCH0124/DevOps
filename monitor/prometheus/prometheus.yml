@@ -50,6 +50,12 @@ scrape_configs:
         - /etc/prometheus/pushgateway.yml
         refresh_interval: 3m
 
+  - job_name: 'otel-collector'
+    scrape_interval: 10s
+    static_configs:
+    file_sd_configs:
+      - files:
+        - /etc/prometheus/otel.yml
 
   - job_name: 'docker'
     static_configs:

@@ -1,0 +1,9 @@
+- targets:
+    - 192.168.101.129:8889
+  labels:
+    env: otel
+
+- targets:
+    - 192.168.101.129:8888
+  labels:
+    env: otel 

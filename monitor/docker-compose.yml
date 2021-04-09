@@ -33,6 +33,11 @@ services:
   pushgateway:
     image: prom/pushgateway
     container_name: pushgateway
+    volumes:
+      - pushgateway_pv:/data
+    command:
+      - --persistence.file=/data/pushgateway.data
+      - --persistence.interval=1h
     restart: unless-stopped
     expose:
       - 9091
@@ -121,3 +126,4 @@ volumes:
     prometheus_pv: {}
     grafana_pv: {}   
     alertmanager_pv: {}
+    pushgateway_pv: {}
