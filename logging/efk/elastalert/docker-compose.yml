@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  elastalert:
+    container_name: elastalert
+    image: praecoapp/elastalert-server
+    ports:
+      - 3030:3030
+      - 3333:3333
+    volumes:
+      - ./config/elastalert.yaml:/opt/elastalert/config.yaml
+      - ./config/config.json:/opt/elastalert-server/config/config.json
+      - ./rules:/opt/elastalert/rules
+      - ./rule_templates:/opt/elastalert/rule_templates
+      - ./other/smtp_auth_file.yaml:/opt/elastalert/smtp_auth_file.yaml
+    extra_hosts:
+      - 'elasticsearch:${ELASTICSEARCH}'
+
+  webapp:
+    image: praecoapp/praeco
+    ports:
+      - 8080:8080
+#    environment:
+#      VUE_APP_BASE_URL: /my-path/
+    volumes:
+      - ./public/praeco.config.json:/var/www/html/praeco.config.json
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf

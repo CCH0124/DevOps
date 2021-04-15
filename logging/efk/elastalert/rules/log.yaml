@@ -1,0 +1,53 @@
+# From rules/example_frequency.yaml
+name: Error Log for prod 
+type: frequency
+index: spring.json.*
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 1
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+    minutes: 10
+
+#- query:
+#    query_string:
+#       query: 'res:failed AND op:login  AND (NOT acct:root) AND (NOT acct:(unknown))'
+
+#filter:
+#- query:
+#    query_string:
+#      query: "system.log.severity: SEVERE
+
+#or whatever makes sense with your data
+filter:
+- query:
+    query_string:
+      query: "level: ERROR AND env: prod"
+      default_field: message
+
+include:
+  - env
+  - level
+  - message
+  - logger
+
+alert:
+- "email"
+
+email:
+- "gama70389@gmail.com"
+smtp_host: "smtp.gmail.com"
+smtp_port: 25
+smtp:ssl: true
+from_addr: "gama70389@gmail.com"
+smtp_auth_file: '/opt/elastalert/smtp_auth_file.yaml'
+
+alert_subject: "Alert from {}"
+alert_subject_args: 
+  - env
+
+alert_text_type: alert_text_only
+alert_text: "Logging: \nlevel: {}\nmessage: {}\nlogger: {}"
+alert_text_args:
+  - level
+  - message
+  - logger
