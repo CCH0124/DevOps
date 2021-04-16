@@ -34,11 +34,11 @@ alert:
 - "email"
 
 email:
-- "gama70389@gmail.com"
+- "xxx@gmail.com"
 smtp_host: "smtp.gmail.com"
 smtp_port: 25
 smtp:ssl: true
-from_addr: "gama70389@gmail.com"
+from_addr: "xxx@gmail.com"
 smtp_auth_file: '/opt/elastalert/smtp_auth_file.yaml'
 
 alert_subject: "Alert from {}"
