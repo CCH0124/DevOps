@@ -206,7 +206,7 @@ docker run -it -d -p 80:80 --log-driver fluentd  --log-opt fluentd-address=tcp:/
 s=testing --log-opt tag=web nginx
 ```
 
-使用 docker-compose logging 設定進行日誌轉發，配置如下
+使用 docker-compose logging 設定進行日誌轉發，此方式本地不會儲存 Log，配置如下
 ```yaml
     logging:
       driver: fluentd
