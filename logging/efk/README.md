@@ -170,12 +170,12 @@ Fluent Bit 處理數據時，使用系統記憶體堆作為主要和臨時的位
 
 ### Monitor
 [monitoring](https://docs.fluentbit.io/manual/administration/monitoring)
+
 ## Kibana
 
 ## 應用
-### 用 docker driver 轉發
 
-fluent-bit 配置
+在 `fluent-bit` 配置我們使用 Socket 方式，其配置如下
 ```bash=
 [SERVICE]
     flush            1
@@ -200,12 +200,22 @@ fluent-bit 配置
     replace_dots     on
     retry_limit      false
 ```
+用 `--log-driver` 轉發
 ```bash=
 docker run -it -d -p 80:80 --log-driver fluentd  --log-opt fluentd-address=tcp://192.168.101.129:24224 --log-opt labels=production_statu
 s=testing --log-opt tag=web nginx
 ```
 
-### Read file
+使用 docker-compose logging 設定進行日誌轉發，配置如下
+```yaml
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: 192.168.101.129:24224
+        tag: web-backend
+```
+
+讀日誌的方式
 
 ```bash=
 [SERVICE]
@@ -239,4 +249,6 @@ s=testing --log-opt tag=web nginx
     replace_dots     on
     retry_limit      false
 ```
-會存在無法分辨是哪個容器產生，之後進行佈署時應當使用 `--log-driver` 方式傳送以用來解決分辨問題，可參考此[鏈接](https://fluentbit.io/articles/docker-logging-elasticsearch/)
+會存在無法分辨是哪個容器產生，之後進行佈署時應當使用 `--log-driver` 方式傳送以用來解決分辨問題，可參考此[鏈接](https://fluentbit.io/articles/docker-logging-elasticsearch/)。
+
+以 Spring boot 的日誌會有多行，因此在 parsers.conf 有配置如何識別多行。
