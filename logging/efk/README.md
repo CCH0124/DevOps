@@ -17,6 +17,18 @@ socket 用於在 docker-compose 上配置將 log 透過 socket 方式傳至 flue
         tag: web-backend
 ```
 
+在過程中發現先前已開發完的應用程式，要如何區分開發環境，以利於分析時做區分使用以下打 `labels` 方式
+
+```yaml
+logging:
+      driver: fluentd
+      options:
+        fluentd-address: "192.168.101.129:3003"
+        labels: "production_status"
+    labels:
+      production_status: "dev"
+```
+
 ## 注意
 1. 配置檔名稱需要是 fluent-bit.conf，否則會出現無法讀取到檔案的問題
 
