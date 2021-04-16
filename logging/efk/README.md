@@ -17,7 +17,7 @@ socket 用於在 docker-compose 上配置將 log 透過 socket 方式傳至 flue
         tag: web-backend
 ```
 
-在過程中發現先前已開發完的應用程式，要如何區分開發環境，以利於分析時做區分使用以下打 `labels` 方式
+在過程中發現先前已開發完的應用程式，要如何區分開發環境，以利於分析時做區分使用以下打 `labels` 方式。抑或著在在開發的應用程式上進行打標籤的動作來識別，以 spring boot 來說可以在 logback 中定義。
 
 ```yaml
 logging:
