@@ -1,0 +1,43 @@
+# From rules/example_frequency.yaml
+name: Error Log for dev 
+type: frequency
+index: 120.log-*
+# Alert when this many documents matching the query occur within a timeframe
+num_events: 1
+# num_events must occur within this amount of time to trigger an alert
+timeframe:
+    minutes: 10
+
+#or whatever makes sense with your data
+filter:
+- query:
+    query_string:
+      query: "level: ERROR"
+      default_field: log
+
+include:
+  - production_status
+  - container_name
+  - level
+  - message
+  - logger
+
+alert:
+- "ms_teams"
+
+ms_teams_webhook_url: 
+- "https://wistron.webhook.office.com/webhookb2/xxx"
+ms_teams_alert_summary: "Log Error Message"
+
+
+alert_subject: "Alert from {}"
+alert_subject_args: 
+  - production_status
+
+alert_text_type: alert_text_only
+alert_text: "Logging: \nlevel: {}\nmessage: {}\nlogger: {}\n container: {}"
+alert_text_args:
+  - level
+  - message
+  - logger
+  - container_name
