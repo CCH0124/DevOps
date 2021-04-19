@@ -179,15 +179,23 @@ Fluent Bit 處理數據時，使用系統記憶體堆作為主要和臨時的位
 ```bash=
 [SERVICE]
     flush            1
-    log_Level        debug
+    log_Level        info
     daemon           off
     parsers_File     parsers.conf
+
 # use driver method
 [INPUT]
     name   forward
     listen 0.0.0.0
     port   24224
 
+[FILTER]
+    Name parser
+    Match *
+    Key_Name log
+    Parser spring
+    Reserve_Data On
+    Preserve_Key On
 [OUTPUT]
     name             es
     match            *
@@ -195,12 +203,25 @@ Fluent Bit 處理數據時，使用系統記憶體堆作為主要和臨時的位
     port             3001
     index            fluent-bit
     logstash_format  on
-    logstash_Prefix  129.log
+    logstash_Prefix  120.log
     logstash_dateformat %Y%m%d
     replace_dots     on
     retry_limit      false
 ```
+
+parser
+
+```bash=
+[PARSER]
+    Name spring
+    Format regex
+    Regex /^(?<time>(\d)+(-\d+)+(\S)+\W(\S)+)(\s+)(?<level>\S+)\W+(?<Logger>\S+)\W+(?<Message>(\S|\s)*)/
+    Time_Key  time
+    Time_Format %b %d %H:%M:%S
+```
+
 用 `--log-driver` 轉發
+
 ```bash=
 docker run -it -d -p 80:80 --log-driver fluentd  --log-opt fluentd-address=tcp://192.168.101.129:24224 --log-opt labels=production_statu
 s=testing --log-opt tag=web nginx
