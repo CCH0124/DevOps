@@ -7,6 +7,7 @@ num_events: 1
 # num_events must occur within this amount of time to trigger an alert
 timeframe:
     minutes: 10
+# 最近10分鐘觸發 1 次 filter 的條件及發送告警
 
 #or whatever makes sense with your data
 filter:
