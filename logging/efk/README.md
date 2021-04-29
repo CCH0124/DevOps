@@ -174,8 +174,14 @@ Fluent Bit 處理數據時，使用系統記憶體堆作為主要和臨時的位
 ## Kibana
 
 ## 應用
+架構如下圖
 
-在 `fluent-bit` 配置我們使用 Socket 方式，其配置如下
+![](../image/logging.png)
+
+藍色為一台主機，而紅色是不同開發環境的主機，`fluent` 充當 agent，在每台主機蒐集 log 並將其傳送至 Elasticsearch 上，後須搭配 `Praeco` 實現 log 告警。
+
+
+在 `fluent-bit` 配置如下，Filter 可以想成是 pipeline 概念。
 ```bash=
 [SERVICE]
     flush            1
@@ -188,14 +194,52 @@ Fluent Bit 處理數據時，使用系統記憶體堆作為主要和臨時的位
     name   forward
     listen 0.0.0.0
     port   24224
+    tag    docker.socket
+# use read
+[INPUT]
+    name              tail
+    tag               docker.file
+    path              /fluentd/log/containers/web.log
+    DB                /var/log/flb_docker.db
+    mem_buf_limit     5MB
+    skip_long_lines   Off
+    refresh_interval  10
+    Docker_Mode On
+    Docker_Mode_Flush 4
+    Docker_Mode_Parser multiline2 # 捕獲 JAVA Exception Stack
 
 [FILTER]
     Name parser
-    Match *
+    Match docker.socket
     Key_Name log
-    Parser spring
+    Parser spring # 解析 JAVA log 
     Reserve_Data On
     Preserve_Key On
+
+[FILTER]
+    Name parser
+    Match docker.file
+    Key_Name log
+    Parser docker # 處裡 Json
+    Reserve_Data On 
+    Preserve_Key On
+
+[FILTER]
+    Name parser
+    Match docker.file
+    Key_Name log
+    Parser h365
+    Reserve_Data On # 將原始直對保留在解析的結果中
+    Preserve_Key On # 將原始的 Key_Name 字段保留在解析的結果中
+# 新增 Tag
+[FILTER]
+    Name record_modifier
+    Match docker.file
+    Record production_status dev
+    Record container_name web
+    Remove_key time
+
+
 [OUTPUT]
     name             es
     match            *
@@ -215,7 +259,26 @@ parser
 [PARSER]
     Name spring
     Format regex
-    Regex /^(?<time>(\d)+(-\d+)+(\S)+\W(\S)+)(\s+)(?<level>\S+)\W+(?<Logger>\S+)\W+(?<Message>(\S|\s)*)/
+    Regex /^(?<time>((\d)+((-|:)\d+)+(\W+)\S+)+)(\s)?(?<level>\S+)\W+(?<logger>\S+)\W+(?<message>(\S|\s)*)/
+    Time_Key  time
+    Time_Format %b %d %H:%M:%S
+
+[PARSER]
+    Name multiline2
+    Format regex
+    Regex /(?<log>^{"log":"((\d)+((-|:)\d+)+.*))/
+
+[PARSER]
+    Name        docker
+    Format      json
+    Time_Key    time
+    Time_Format %Y-%m-%dT%H:%M:%S.%L
+    Time_Keep   On
+
+[PARSER]
+    Name h365
+    Format regex
+    Regex /^(?<time>((\d)+((-|:)\d+)+))(\S)+(\s)+(?<thread>(\S)+)(\W)+(?<level>\S+)(\W+)(?<message>(\S|\s)*)/
     Time_Key  time
     Time_Format %b %d %H:%M:%S
 ```
@@ -228,48 +291,16 @@ s=testing --log-opt tag=web nginx
 ```
 
 使用 docker-compose logging 設定進行日誌轉發，此方式本地不會儲存 Log，配置如下
+
 ```yaml
     logging:
       driver: fluentd
       options:
-        fluentd-address: 192.168.101.129:24224
-        tag: web-backend
+        fluentd-address: "192.168.101.120:24224"
+        tag: "spring boot"
+        labels: "production_status"
+    labels:
+      production_status: "dev"
 ```
 
-讀日誌的方式
-
-```bash=
-[SERVICE]
-    flush            1
-    log_Level        debug
-    daemon           off
-    parsers_File     parsers.conf
-
-# Read file
-[INPUT]
-    name              tail
-    tag               docker.*
-    path              /fluentd/log/containers/*/*-json.log
-    DB                /var/log/flb_docker.db
-    parser            docker
-    mem_buf_limit     5MB
-    skip_long_lines   On
-    refresh_interval  10
-    docker_mode       On
-    docker_mode_flush 4
-
-[OUTPUT]
-    name             es
-    match            *
-    host             192.168.101.129
-    port             3001
-    index            fluent-bit
-    logstash_format  on
-    logstash_Prefix  129.log
-    logstash_dateformat %Y%m%d
-    replace_dots     on
-    retry_limit      false
-```
-會存在無法分辨是哪個容器產生，之後進行佈署時應當使用 `--log-driver` 方式傳送以用來解決分辨問題，可參考此[鏈接](https://fluentbit.io/articles/docker-logging-elasticsearch/)。
-
-以 Spring boot 的日誌會有多行，因此在 parsers.conf 有配置如何識別多行。
+會存在無法分辨是哪個容器產生，因此使用 `labels` 關鍵字實現自訂義標籤。這樣可用來解決分辨問題源，可參考此[鏈接](https://fluentbit.io/articles/docker-logging-elasticsearch/)。
