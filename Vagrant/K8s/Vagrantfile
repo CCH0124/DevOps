@@ -93,7 +93,7 @@ $configureMaster = <<-SCRIPT
     # install Calico pod network addon
     kubectl create -f https://raw.githubusercontent.com/cilium/cilium/v1.9/install/kubernetes/quick-install.yaml
 
-    kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
+    sudo kubeadm token create --print-join-command >> /etc/kubeadm_join_cmd.sh
     chmod +x /etc/kubeadm_join_cmd.sh
 
     echo 'source <(kubectl completion bash)' >>~/.bashrc
