@@ -1,5 +1,22 @@
 # 1.19 版本
 ## Pod
+yaml 定義
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: postgres
+  labels:
+    tier: db
+spec:
+  containers:
+    - name: postgres
+      image: postgres
+      env:
+        - name: POSTGRES_PASSWORD
+          value: password
+```
 ##### How many pods ?
 ```shell
 kubectl get pods
@@ -64,6 +81,31 @@ kubectl edit pods redis
 ```
 
 ## ReplicaSet
+yaml 定義
+
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  labels:
+    app: mywebsite
+    tier: frontend
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: myapp
+  template: # 定義 POD
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+```
 
 ##### How many ReplicaSets exist on the system?
 ```shell
@@ -249,3 +291,169 @@ Or
 ##### Now scale the ReplicaSet down to 2 PODs.
 
 擴展數量減少，如上一個擴展方式一樣，使用 `scale` 或是 `edit` 方式
+
+## Deployments
+yaml 定義
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: mywebsite
+    tier: frontend
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+```
+
+##### How many Deployments exist on the system? In the current(default) namespace.
+```shell
+# kubectl get deployment
+```
+
+##### Create a new Deployment using the deployment-definition-1.yaml file. There is an issue with the file, so try to fix it.
+```yaml
+---
+apiVersion: apps/v1
+kind: Deployment # 不是 deployment
+metadata:
+  name: deployment-1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: busybox-pod
+  template:
+    metadata:
+      labels:
+        name: busybox-pod
+    spec:
+      containers:
+      - name: busybox-container
+        image: busybox888
+        command:
+        - sh
+        - "-c"
+        - echo Hello Kubernetes! && sleep 3600
+```
+
+##### Create a new Deployment with the below attributes using your own deployment definition file.
+- Name: httpd-frontend;
+- Replicas: 3;
+- Image: httpd:2.4-alpine
+
+```shell
+# kubectl create deployment --image=httpd:2.4-alpine --replicas=3 httpd-frontend
+```
+
+## Namespace
+
+##### How many Namespaces exist on the system?
+```shell
+# kubectl get ns
+```
+
+##### How many pods exist in the research namespace?
+```shell
+# kubectl get pods -n research
+```
+
+##### Create a POD in the finance namespace. Use the spec given below.
+```shell
+#  kubectl run nginx --image=nginx --namespace=finance
+```
+
+##### Which namespace has the blue pod in it?
+```shell
+# kubectl get pods --all-namespaces
+```
+##### What DNS name should the Blue application use to access the database 'db-service' in the 'dev' namespace You can try it in the web application UI. 
+
+- `db-service.dev.svc.cluster.local`
+
+## Service
+
+yaml 定義
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: image-processing
+  labels:
+    app: myapp
+spec:
+  selector:
+    tier: backend
+  type: ClusterIP # or NodePort etc.
+  ports:
+    - port: 80
+      targetPort: 8080
+  
+```
+
+##### How many Services exist on the system? in the current(default) namespace
+系統預設會建立一個
+```shell
+# kubectl get svc
+```
+
+##### What is the type of the default kubernetes service?
+- clusterIP
+
+##### What is the targetPort configured on the kubernetes service?
+- 6443 (API Server)
+
+```shell
+# kubectl describe svc kubernetes 
+Name:              kubernetes
+Namespace:         default
+Labels:            component=apiserver
+                   provider=kubernetes
+Annotations:       <none>
+Selector:          <none>
+Type:              ClusterIP
+IP Families:       <none>
+IP:                10.96.0.1
+IPs:               10.96.0.1
+Port:              https  443/TCP
+TargetPort:        6443/TCP
+Endpoints:         10.178.29.6:6443
+Session Affinity:  None
+Events:            <none>
+```
+##### Create a new service to access the web application using the service-definition-1.yaml file
+- Name: webapp-service
+- Type: NodePort
+- targetPort: 8080
+- port: 8080
+- nodePort: 30080
+- selector: simple-webapp
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+spec:
+  type: NodePort
+  ports:
+    - targetPort: 8080
+      port: 8080
+      nodePort: 30080
+  selector:
+    name: simple-webapp
+```
