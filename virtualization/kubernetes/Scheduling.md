@@ -90,3 +90,45 @@ spec:
 ```
 
 ## Taints and Tolerations
+##### Do any taints exist on node01?
+```shell
+kubectl describe node node01 | grep "Taints"
+```
+
+##### Create a taint on node01 with key of spray, value of mortein and effect of NoSchedule
+```shell
+kubectl taint nodes node01 spray=mortein:NoSchedule
+```
+
+此時建立 POD (名稱 Mosquito)會發生 Pending。
+##### Why do you think the pod is in a pending state?
+- POD Mosquito cannot tolerate taint Mortein
+
+##### Create another pod named bee with the NGINX image, which has a toleration set to the taint Mortein
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: bee
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+  tolerations:
+  - key: "spray"
+    operator: "Equal"
+    value: "mortein"
+    effect: "NoSchedule"
+```
+
+##### Do you see any taints on master/controlplane node?
+在 master 上會是 `Taints:             node-role.kubernetes.io/master:NoSchedule`
+
+##### Remove the taint on master/controlplane, which currently has the taint effect of NoSchedule
+
+```shell
+kubectl taint nodes controlplane node-role.kubernetes.io/master:NoSchedule-
+```
+
+## Node Affinity
