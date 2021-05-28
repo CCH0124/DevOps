@@ -1,0 +1,61 @@
+version: "3.7"
+services:
+  kurento-media-server:
+    image: kurento/kurento-media-server:latest
+    network_mode: "host"
+    volumes:
+      - ./etc-kurento:/etc/kurento
+    environment:
+      - KMS_MIN_PORT=5000
+      - KMS_MAX_PORT=5050
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      - coturn
+
+  openvidu-server:
+    image: openvidu/openvidu-server:2.17.1
+    network_mode: "host"
+    environment:
+      - DOMAIN_OR_PUBLIC_IP=wicloudrtc.biotrd.net
+      - OPENVIDU_SECRET=openvidu
+      - KMS_URIS=["wss://100.100.13.52:8433/kurento"]
+        #      - CERTIFICATE_TYPE=selfsigned # https://docs.openvidu.io/en/2.17.0/deployment/deploying-on-premises/#1-self-signed-certificate
+      - CERTIFICATE_TYPE=owncert
+      - HTTPS_PORT=4443
+      - OPENVIDU_RECORDING=true
+      - OPENVIDU_RECORDING_PATH=/home/openvidu/recordings
+      - OPENVIDU_CDR=true
+      - OPENVIDU_CDR_PATH=/home/openvidu/cdr
+      - OPENVIDU_RECORDING_PUBLIC_ACCESS=true
+      - OPENVIDU_RECORDING_COMPOSED_URL=https://wicloudrtc.biotrd.net:4443
+    volumes:
+      - ./openvidu/recordings:/home/openvidu/recordings
+      - ./openvidu/cdr:/home/openvidu/cdr
+      - ./openvidu/cert/:/opt/openvidu/owncert
+      - /var/run/docker.sock:/var/run/docker.sock
+    pull_policy: always
+    restart: unless-stopped
+    depends_on:
+      - kurento-media-server
+
+  coturn:
+    image: coturn/coturn
+    network_mode: "host"
+    restart: always
+    volumes:
+      - coturn-data:/var/lib/coturn
+      - ./coturn/turnserver.conf:/etc/coturn/turnserver.conf
+
+volumes:
+  postgresql-data:
+  coturn-data:
+networks:
+  frontend:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+  backend:
+    internal: true
