@@ -17,7 +17,7 @@ services:
     image: openvidu/openvidu-server:2.17.1
     network_mode: "host"
     environment:
-      - DOMAIN_OR_PUBLIC_IP=wicloudrtc.biotrd.net
+      - DOMAIN_OR_PUBLIC_IP=<DOMAIN>
       - OPENVIDU_SECRET=openvidu
       - KMS_URIS=["wss://100.100.13.52:8433/kurento"]
         #      - CERTIFICATE_TYPE=selfsigned # https://docs.openvidu.io/en/2.17.0/deployment/deploying-on-premises/#1-self-signed-certificate
@@ -28,7 +28,7 @@ services:
       - OPENVIDU_CDR=true
       - OPENVIDU_CDR_PATH=/home/openvidu/cdr
       - OPENVIDU_RECORDING_PUBLIC_ACCESS=true
-      - OPENVIDU_RECORDING_COMPOSED_URL=https://wicloudrtc.biotrd.net:4443
+      - OPENVIDU_RECORDING_COMPOSED_URL=https://<DOMAIN>:4443
     volumes:
       - ./openvidu/recordings:/home/openvidu/recordings
       - ./openvidu/cdr:/home/openvidu/cdr
