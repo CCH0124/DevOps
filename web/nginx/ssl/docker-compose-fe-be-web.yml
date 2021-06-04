@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  backend:
+    container_name: backend
+    image: {IMAGE}
+    environment:
+      - PROJECT_PROPERTIES={...}
+    restart: always  
+    ports:
+      - "8888:8080"
+
+  frontend:
+    container_name: frondEnd
+    image: {IMAGE}
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "9999:80"
+
+  nginx_proxy:
+    container_name: nginx
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/cert:/etc/nginx/ssl/certs
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend
+      - frontend
