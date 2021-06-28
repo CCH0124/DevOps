@@ -5,6 +5,7 @@ services:
     network_mode: "host"
     volumes:
       - ./etc-kurento:/etc/kurento
+      - ./openvidu/recordings:/opt/openvidu/recordings:rw
     environment:
       - KMS_MIN_PORT=5000
       - KMS_MAX_PORT=5050
