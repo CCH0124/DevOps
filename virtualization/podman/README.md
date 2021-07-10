@@ -7,6 +7,9 @@ vagrant:100000:65536
 
 非 root 容器的運行權限相對會比外部使用者更小，對於網路設備需要使用第三方套件實現，對於 Port 的映射必須大於 1024，小於 1024 都是最高權限的。
 
+- 使用非 root 容器，容器 image 儲存在家目錄 ($HOME/.local/share/containers/storage/) 下，而不是 `/var/lib/containers`
+- 使用非 root 容器的用戶在系統上作為一系列 user 和 group ID 運行的特殊權限，否則對系統沒有 root 權限
+
 ## Run Nginx
 
 
