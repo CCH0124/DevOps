@@ -5,7 +5,7 @@ services:
     container_name: fluent-bit
     volumes:
       - type: bind
-        source: ./fluent/conf/socket
+        source: ./fluent/conf/
         target: /fluent-bit/etc
         read_only: true
 # IF use read file
