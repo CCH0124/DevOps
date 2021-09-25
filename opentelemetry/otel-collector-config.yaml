@@ -4,11 +4,10 @@ receivers:
       grpc:
 
 exporters:
-  prometheus:
-    endpoint: "0.0.0.0:8889"
-    namespace: promexample
-    const_labels:
-      label1: value1
+        #  prometheus:
+        #    endpoint: "172.17.10.105:9090"
+        #    const_labels:
+        #      label1: value1
   logging:
 
   jaeger:
@@ -32,7 +31,7 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [logging, jaeger]
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [logging, prometheus]
+      #    metrics:
+      #      receivers: [otlp]
+      #      processors: [batch]
+      #      exporters: [logging, prometheus]

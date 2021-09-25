@@ -1,0 +1,9 @@
+- targets:
+    - otel-collector:8889
+  labels:
+    env: otel
+
+- targets:
+    - otel-collector:8888
+  labels:
+    env: otel 

@@ -5,7 +5,7 @@ services:
     image: jaegertracing/jaeger-query
     environment:
       - SPAN_STORAGE_TYPE=elasticsearch
-      - ES_SERVER_URLS=http://192.168.101.129:3001
+      - ES_SERVER_URLS=http://elasticsearch:9200
       - ES_TAGS_AS_FIELDS_ALL=true
       - LOG_LEVEL=debug
     ports:
@@ -18,7 +18,7 @@ services:
       - SPAN_STORAGE_TYPE=elasticsearch
       - LOG_LEVEL=debug
     command: [
-      "--es.server-urls=http://192.168.101.129:3001",
+            "--es.server-urls=http://elasticsearch:9200",
       "--es.num-shards=3",
       "--es.num-replicas=0"
     ]
@@ -57,3 +57,57 @@ services:
       - "13133"       # health_check
     depends_on:
       - otel-collector
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+    container_name: elasticsearch
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch_pv
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    restart: unless-stopped
+    environment:
+      ES_JAVA_OPTS: "-Xms1024m -Xms1024m"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_pv:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=24h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    expose:
+      - "9090"
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    user: "472"
+    volumes:
+      - grafana_pv:/var/lib/grafana # docker volume create grafana_pv
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    env_file:
+      - .env.grfana
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+volumes:
+  elasticsearch_pv: {}
+  prometheus_pv: {}
+  grafana_pv: {}
