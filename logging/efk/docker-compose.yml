@@ -25,29 +25,6 @@ services:
           memory: 2048m
         reservations:
           memory: 1024m
-
-  cerebro:
-    image: yannart/cerebro
-    container_name: cerebro
-    ports:
-      - "9000:9000"
-    restart: unless-stopped
-    networks:
-      - efk
-    depends_on:
-      - elasticsearch
-
-  dejavu:
-    image: appbaseio/dejavu:latest
-    container_name: dejavu
-    ports:
-      - "1358:1358"
-    restart: unless-stopped
-    networks:
-      - efk
-    depends_on:
-      - elasticsearch
-
   kibana:
     image: docker.elastic.co/kibana/kibana:${ELK_VERSION}
     container_name: kibana
@@ -66,7 +43,8 @@ services:
 
 networks:
   efk:
-    driver: bridge
+   external:
+     name: efk
 
 volumes:
   elasticsearch_pv: {}
