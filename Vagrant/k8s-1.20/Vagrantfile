@@ -1,0 +1,80 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+servers = [
+    {
+        :name => "master",
+        :type => "master",
+        :box => "bento/ubuntu-20.04",
+        :eth1 => "172.17.205.10",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "node1",
+        :type => "node",
+        :box => "bento/ubuntu-20.04",
+        :eth1 => "172.17.205.11",
+        :mem => "2048",
+        :cpu => "2"
+    },
+    {
+        :name => "node2",
+        :type => "node",
+        :box => "bento/ubuntu-20.04",
+        :eth1 => "172.17.205.12",
+        :mem => "2048",
+        :cpu => "2"
+    }
+]
+
+# This script to install k8s using kubeadm will get executed after a box is provisioned
+$configureBox = <<-SCRIPT
+    set -e -x -u
+    export DEBIAN_FRONTEND=noninteractive
+    # Docker
+    sudo apt-get update
+    sudo apt-get install -y vim git cmake build-essential tcpdump tig jq socat bash-completion
+    sudo apt-get install -y apt-transport-https  ca-certificates curl gnupg lsb-release
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+
+    # run docker commands as vagrant user (sudo not required)
+    usermod -aG docker vagrant
+
+    cat > /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "dns": [
+    "8.8.8.8",
+    "8.8.4.4"
+  ]
+}
+EOF
+    sudo systemctl restart docker
+
+    #Disable swap
+    sudo swapoff -a && sudo sysctl -w vm.swappiness=0
+    sudo sed '/vagrant--vg-swap/d' -i /etc/fstab
+
+    # install kubeadm
+    sudo apt-get install -y apt-transport-https curl
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+    echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee --append /etc/apt/sources.list.d/kubernetes.list
+    sudo apt-get update
+    sudo apt-get install -y kubelet=1.20.0-00 kubeadm=1.20.0-00 kubectl=1.20.0-00
+    sudo apt-mark hold kubelet kubeadm kubectl
+
+    # hosts
+    cat >>/etc/hosts<<EOF
+172.17.205.10 cch.master k8s-master master
+172.17.205.11 cch.node1 k8s-node-1 node1
+172.17.205.12 cch.node2 k8s-node-2 node2
+EOF
