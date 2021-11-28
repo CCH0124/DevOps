@@ -1,0 +1,79 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "bento/ubuntu-20.04"
+
+  # Network Setting
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+  config.vm.network "private_network", ip: "192.168.56.100"
+  # config.vm.network "public_network"
+
+  # Folder Setting，同步本地資料至目標主機
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  # Provider Settings
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+
+    # Customize the amount of memory on the VM:
+    vb.memory = "10240"
+    vb.cpus = 2
+  end
+
+  # Provision Setting
+  config.vm.provision "shell", inline: <<-SHELL
+    set -e -x -u
+    export DEBIAN_FRONTEND=noninteractive
+    # Docker
+    sudo apt-get update
+    sudo apt-get install -y vim git cmake build-essential tcpdump tig jq socat bash-completion
+    sudo apt-get install -y apt-transport-https  ca-certificates curl gnupg lsb-release
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+
+    # run docker commands as vagrant user (sudo not required)
+    sudo usermod -aG docker vagrant
+
+    cat > /etc/docker/daemon.json <<EOF
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2",
+  "dns": [
+    "8.8.8.8",
+    "8.8.4.4"
+  ]
+}
+EOF
+    sudo systemctl restart docker
+    sudo swapoff -a && sudo sysctl -w vm.swappiness=0
+    sudo sed '/vagrant--vg-swap/d' -i /etc/fstab
+    # java11
+    sudo apt install default-jdk -y
+    JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64" > /etc/environment
+    source /etc/environment
+    #maven
+#    tar -xvf apache-maven-3.8.3-bin.tar.gz -C /usr/local/apache-maven/apache-maven-3.8.3
+#    echo "export M2_HOME=/usr/local/apache-maven/apache-maven-3.8.3" > ~/.bashrc 
+#    echo "export M2=$M2_HOME/bin" > ~/.bashrc 
+#    echo "export MAVEN_OPTS=-Xms512m -Xmx512m" > ~/.bashrc
+#    echo "export PATH=$M2:$PATH" > ~/.bashrc
+#    source ~/.bashrc
+    # graalvm
+#    wget https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-19.3.6/graalvm-ce-java11-linux-amd64-19.3.6.tar.gz
+#    tar -xvzf graalvm-ce-java11-linux-amd64-19.3.6.tar.gz -C /usr/local/graalvm-ce/graalvm-ce-java11-linux-amd64-19.3.6
+  SHELL
+end
