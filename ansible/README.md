@@ -1,14 +1,21 @@
 # Ansible
 
+**特性**
+
+- 模組化
+- 支援自定義模組
+- 基於 OpenSSH 的安全
+
 ![](https://i1.kknews.cc/SIG=2lsg1pn/432s0000r289o0375po0.jpg)
 
 ![](https://i.imgur.com/uP12RK3.png)
 
-## 主要組成
+**主要組成**
+
 - playbooks
     - 任務劇本，編排定義 Ansible 任務集合的配置檔案，由 Ansible 順序一次執行，通常是 JSON 或 YAML 檔案
 - inventory
-    - Ansible 管理主機清單 /etc/ansible/hosts
+    - Ansible 管理主機清單 `/etc/ansible/hosts`
 - modules
     - Ansible 執行指令功能模組，多數為內建核心模組，也可自定義
 - plugin
@@ -35,7 +42,11 @@
 
 ## 相關檔案
 
-```shell=
+- `/etc/ansible/ansible.cfg` 主配置檔案，配置 ansible 
+- `/etc/ansible/hosts` 要被管理的主機清單
+- `/etc/ansible/roles/` 存放角色的目錄
+
+```bash=
 $ ls -al /etc/ansible/
 total 32
 drwxr-xr-x  2 root root  4096 Oct 27 14:46 .
@@ -44,112 +55,27 @@ drwxr-xr-x 93 root root  4096 Oct 27 14:45 ..
 -rw-r--r--  1 root root   982 Dec 18  2018 hosts # 主機清單
 ```
 
-```shell=
-$ ls -l /usr/bin/ans*
-lrwxrwxrwx 1 root root 68 Mar 16  2020 /usr/bin/ansible -> ../lib/python3/dist-packages/ansible/cli/scripts/ansible_cli_stub.py # 主程式
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-config -> ansible 
-lrwxrwxrwx 1 root root 79 Mar 16  2020 /usr/bin/ansible-connection -> ../lib/python3/dist-packages/ansible/cli/scripts/ansible_connection_cli_stub.py
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-console -> ansible # 與用戶交互執行工具
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-doc -> ansible # 配置檔案
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-galaxy -> ansible 
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-inventory -> ansible
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-playbook -> ansible# 訂製自動化任務
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-pull -> ansible # 遠端執行命令
-lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-vault -> ansible # 檔案加密工具
+`/etc/ansible/ansible.cfg` 中大多內容無須修改
+```bash=
+# /etc/ansible/ansible.cfg
+[defaults]
+#inventory       = /etc/ansible/hosts # 主機清單位置
+#library         = ~/.ansible/plugins/modules:/usr/share/ansible/plugins/modules 模組存放
+#module_utils    = ~/.ansible/plugins/module_utils:/usr/share/ansible/plugins/module_utils
+#remote_tmp      = ~/.ansible/tmp # 臨時命令檔案存放在遠端主機目錄
+#local_tmp       = ~/.ansible/tmp # 本機臨時命令檔案存放位置
+#forks           = 5 # 預設併發數量
+#poll_interval   = 0.001
+#ask_pass        = False
+#transport       = smart
 ```
 
 ## 主機清單 inventory
 ansible 主要任務是批量主機操做，為了方便使用其中部分的主機，可以再 inventory file 終將其分組命名。
 
-預設的 inventory file 為 `/etc/ansible/hosts`
-inventory file 可以有很多個，也可以透過 Dynamic Inventory 來動態生成
+預設的 inventory file 為 `/etc/ansible/hosts`，inventory file 可以有很多個，也可以透過 Dynamic Inventory 來動態生成。
 
-
-### 範例
-使用模組 ping
-```shell=
-$ ansible 192.168.134.145 -m ping
-[WARNING]: provided hosts list is empty, only localhost is available. Note thatthe implicit localhost does not match 'all'
-[WARNING]: Could not match supplied host pattern, ignoring: 192.168.134.145
-```
-因為不再清單中嘗試加入 inventory file 中
-
-```shell=
-cch@cch:~$ vim /etc/ansible/hosts
-cch@cch:~$ sudo vim /etc/ansible/hosts
-[sudo] password for cch:
-cch@cch:~$ tail -f /etc/ansible/hosts
-#db01.intranet.mydomain.net
-#db02.intranet.mydomain.net
-#10.25.1.56
-#10.25.1.57
-
-# Here's another example of host ranges, this time there are no
-# leading 0s:
-
-#db-[99:101]-node.example.com
-192.168.134.145
-```
-
-在試一次，這次可以發現似乎可以做遠端的動作，但是還是有錯誤，因為這邊沒辦法說我要管理你就管理。
-
-```shell=
-$ sudo ansible 192.168.134.145 -m ping
-The authenticity of host '192.168.134.145 (192.168.134.145)' can't be established.
-ECDSA key fingerprint is SHA256:ox1k4rBtnefd1Hu3cwVYctcNWRThjt7PNNKKt2JEEeA.
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-192.168.134.145 | UNREACHABLE! => {
-    "changed": false,
-    "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.134.145' (ECDSA) to the list of known hosts.\r\nroot@192.168.134.145: Permission denied (publickey,password).",
-    "unreachab
-```
-
-使用 `-k` 參數帶 key 驗證
-
-```shell=
-cch@cch:~$ ansible 192.168.134.145 -m ping -k
-SSH password:
-192.168.134.145 | SUCCESS => {
-    "ansible_facts": {
-        "discovered_interpreter_python": "/usr/bin/python3"
-    },
-    "changed": false,
-    "ping": "pong"
-}
-```
-```shell
-$ ansible all -m ping -k # all 表示主機清單中所有
-```
-
-##### 分組
-```shell=
-cch@cch:~$ sudo vim /etc/ansible/hosts
-cch@cch:~$ tail -f /etc/ansible/hosts
-#10.25.1.57
-
-# Here's another example of host ranges, this time there are no
-# leading 0s:
-
-#db-[99:101]-node.example.com
-[webserver]
-192.168.134.145 # 如果 SSH 的 Port 非預設可帶 Port
-[dbserver]
-192.168.134.144
-```
-
-其中分組可以針對連續 IP 做簡易表示 `192.168.134.14[4:5]`，如果針對 DNS 的話也可以實現 `db-[a:c].example.com`。
-
-```shell=
-$ ansible dbserver -m ping -k
-SSH password:
-192.168.134.144 | SUCCESS => {
-    "ansible_facts": {
-        "discovered_interpreter_python": "/usr/bin/python3"
-    },
-    "changed": false,
-    "ping": "pong"
-}
-```
+如果當前主機並非以預設 SSH Port，則可以在主機的 IP 或域名加上 Port 號進行識別。
 
 ## 主配置檔案
 可依照環境做更改。`local_tmp` 為執行 ansible 動作時產生腳本的存放位置，當然其也會傳送到被控制端主機上位置為 `remote_tmp`。`forks` 是併行運行的數量設置。`remote_port` 預設遠端端口。 `host_key_checking` 可以註銷該註解，因為再執行 ansible 相關控制操作時，其會根據 SSH key 做動作    
@@ -181,10 +107,132 @@ $ vi /etc/ansible/ansible.cfg
 ...
 ```
 
+## Ansible 命令執行過程
+1. 加載自己的配置檔案，預設是 `/etc/ansible/ansible.cfg`
+2. 加載自己對應的模組
+3. 透過 ansible 將模組或指令生成對應的臨時 py 檔案，並將其傳送至遠端服務器的對應執行用戶 `$HONE/.ansible/tmp/ansible-temp-[0-9]/xxx.py`
+4. 給檔案 `+x` 執行
+5. 執行返回結果
+6. 刪除臨時 py 檔案
+## ansible 相關工具
+```shell=
+$ ls -l /usr/bin/ans*
+lrwxrwxrwx 1 root root 68 Mar 16  2020 /usr/bin/ansible -> ../lib/python3/dist-packages/ansible/cli/scripts/ansible_cli_stub.py # 主程式
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-config -> ansible 
+lrwxrwxrwx 1 root root 79 Mar 16  2020 /usr/bin/ansible-connection -> ../lib/python3/dist-packages/ansible/cli/scripts/ansible_connection_cli_stub.py
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-console -> ansible # 與用戶交互執行工具
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-doc -> ansible # 配置檔案
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-galaxy -> ansible 
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-inventory -> ansible
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-playbook -> ansible# 訂製自動化任務
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-pull -> ansible # 遠端執行命令
+lrwxrwxrwx 1 root root  7 Mar 16  2020 /usr/bin/ansible-vault -> ansible # 檔案加密工具
+```
+
+Ad-Hoc 就是利用 ansible 指令，通常用於臨時使用場景；Ansible-playbook 主要適用於長期規劃好的大型專案場景。
+
+
+### ansible-doc
+
+```bash=
+$ ansible-doc -s ping
+- name: Try to connect to host, verify a usable python and return `pong' on success
+  ping:
+      data:                  # Data to return for the `ping' return value. If this parameter is set to `crash', the module will cause an exception.
+```
+
+### ansible
 ansible 透過 SSH 時限配置管理、應用部署、任務執行等功能。建議配置 ansible 端能基於密要認證方式連接各個貝管理節點
 
+```bash
+ansible <host-pattern> [-m module_name] [-a args]
+# <host-pattern> 會對應 /etc/ansible/hosts 建立的資訊，指定為 all 時表示所有
+```
+**範例**
+
+使用模組 ping
 ```shell=
-$ ansible <host-pattern> [-m module_name] [-a args]
+$ ansible 192.168.134.145 -m ping
+[WARNING]: provided hosts list is empty, only localhost is available. Note thatthe implicit localhost does not match 'all'
+[WARNING]: Could not match supplied host pattern, ignoring: 192.168.134.145
+```
+因為不再清單中嘗試加入 inventory file 中
+
+```shell=
+cch@cch:~$ vim /etc/ansible/hosts
+cch@cch:~$ sudo vim /etc/ansible/hosts
+[sudo] password for cch:
+cch@cch:~$ tail -f /etc/ansible/hosts
+#db01.intranet.mydomain.net
+#db02.intranet.mydomain.net
+#10.25.1.56
+#10.25.1.57
+
+# Here's another example of host ranges, this time there are no
+# leading 0s:
+
+#db-[99:101]-node.example.com
+192.168.134.145
+```
+
+在試一次，這次可以發現似乎可以做遠端的動作，但是還是有錯誤，因為這邊沒辦法說我要管理你就管理。
+
+
+```shell=
+$ sudo ansible 192.168.134.145 -m ping
+The authenticity of host '192.168.134.145 (192.168.134.145)' can't be established.
+ECDSA key fingerprint is SHA256:ox1k4rBtnefd1Hu3cwVYctcNWRThjt7PNNKKt2JEEeA.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+192.168.134.145 | UNREACHABLE! => {
+    "changed": false,
+    "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.134.145' (ECDSA) to the list of known hosts.\r\nroot@192.168.134.145: Permission denied (publickey,password).",
+    "unreachab
+```
+
+使用 `-k` 參數帶 key 驗證，但如果指定的 host-pattern 有多個主機則不適用。透過  `ssh-keygen` 產生金鑰並使用 `ssh-copy-id` 至每台被管理主機。這樣可以節省打密碼的步驟。
+
+```shell=
+cch@cch:~$ ansible 192.168.134.145 -m ping -k
+SSH password:
+192.168.134.145 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
+```shell
+$ ansible all -m ping -k # all 表示主機清單中所有
+```
+**分組**
+```shell=
+cch@cch:~$ sudo vim /etc/ansible/hosts
+cch@cch:~$ tail -f /etc/ansible/hosts
+#10.25.1.57
+
+# Here's another example of host ranges, this time there are no
+# leading 0s:
+
+#db-[99:101]-node.example.com
+[webserver]
+192.168.134.145 # 如果 SSH 的 Port 非預設可帶 Port
+[dbserver]
+192.168.134.144
+```
+
+其中分組可以針對連續 IP 做簡易表示 `192.168.134.14[4:5]`，如果針對 DNS 的話也可以實現 `db-[a:c].example.com`。
+
+```shell=
+$ ansible dbserver -m ping -k
+SSH password:
+192.168.134.144 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
 ```
 
 ```shell=
@@ -203,9 +251,7 @@ drwx------ 2 cch  cch  4096 Oct 27 09:32 .cache
 -rw-r--r-- 1 cch  cch     0 Oct 27 09:32 .sudo_as_admin_successful
 ```
 
-透過  `ssh-keygen` 產生金鑰並使用 `ssh-copy-id` 至每台被管理主機。這樣可以節省打密碼的步驟。
-
-##### host-pattern
+**host-pattern**
 - all 
     - 表示所有
 - \*
@@ -220,15 +266,76 @@ drwx------ 2 cch  cch  4096 Oct 27 09:32 .cache
     - 反向
 - 正規表達式
 
-## Ansible 命令執行過程
-1. 加載自己的配置檔案，預設是 `/etc/ansible/ansible.cfg`
-2. 加載自己對應的模組
-3. 透過 ansible 將模組或指令生成對應的臨時 py 檔案，並將其傳送至遠端服務器的對應執行用戶 `$HONE/.ansible/tmp/ansible-temp-[0-9]/xxx.py`
-4. 給檔案 `+x` 執行
-5. 執行返回結果
-6. 刪除臨時 py 檔案
+### ansible-galaxy
+- 連接 ansible 官網下載相對應的 roles
+roles 可以是把 playbook 再整合的一個名詞
+```shell=
+ansible-galaxy list # 列出以安裝的 galaxy
+ansible-galaxy instll ... # 安裝
+ansible-galaxy remove ... # 移除
+```
+
+嘗試下載 nginx
+
+```shell
+$ cd .ansible/
+cch@LAPTOP-J7ES249S:~/.ansible$ ls
+cp  galaxy_token  roles  tmp
+cch@LAPTOP-J7ES249S:~/.ansible$ tree roles/
+roles/
+└── geerlingguy.nginx
+    ├── LICENSE
+    ├── README.md
+...
+$ ansible-galaxy remove geerlingguy.nginx # 刪除
+- successfully removed geerlingguy.nginx
+```
+
+### ansible-pull
+推送命令至遠端，效率提升，維運要求高
+
+### Ansible-vault
+管理加密解密 yml 檔案
+
+```shell
+$ ansible-vault encrypt hello.yml 
+New Vault password: 
+Confirm New Vault password: 
+Encryption successful
+cch@LAPTOP-J7ES249S:/mnt/c/Users/ASUS/Desktop/ansible$ cat hello.yml 
+$ANSIBLE_VAULT;1.1;AES256
+66383231303264626562363439326239336137366536623731646138613834336665653665643233
+663...162
+$ ansible-vault view hello.yml # 查看
+$ ansible-vault edit hello.yml # 編輯
+$ ansible-vault rekey hello.yml # 重新設置密碼
+```
+這樣無法直接執行 playbook，需要透過解密
+
+```shell
+$ ansible-vault decrypt hello.yml        
+```
+
+### Ansible-console
+```shell
+$ ansible-console 
+Welcome to the ansible console.
+Type help or ? to list commands.
+
+cch@all (3)[f:5]$ # all 表示所有清單，(3) 表示清單中主機數，[f:5] 表示可以同時執行主機數量
+cch@all (3)[f:5]$ cd webserver # 切換清單
+cch@webserver (2)[f:5]$
+cch@webserver (2)[f:5]$ command hostname # 執行 command 模組
+192.168.134.145 | CHANGED | rc=0 >>
+node01
+192.168.134.143 | CHANGED | rc=0 >>
+cch
+```
+相似於前面 ansible 指令的做法，只是環境不同而以
+
 
 ## 常用模組
+
 - command
     - 對於管道或重定向、變量等是不支援的
     - 預設
@@ -385,75 +492,8 @@ cch@cch:~$ ansible all  -a 'ls ./ansible-test/'
 - Group
     - 管理群組
 
-### ansible-galaxy
-- 連接 ansible 官網下載相對應的 roles
-roles 可以是把 playbook 再整合的一個名詞
-```shell=
-ansible-galaxy list # 列出以安裝的 galaxy
-ansible-galaxy instll ... # 安裝
-ansible-galaxy remove ... # 移除
-```
-
-嘗試下載 nginx
-
-```shell
-$ cd .ansible/
-cch@LAPTOP-J7ES249S:~/.ansible$ ls
-cp  galaxy_token  roles  tmp
-cch@LAPTOP-J7ES249S:~/.ansible$ tree roles/
-roles/
-└── geerlingguy.nginx
-    ├── LICENSE
-    ├── README.md
-...
-$ ansible-galaxy remove geerlingguy.nginx # 刪除
-- successfully removed geerlingguy.nginx
-```
-
-### ansible-pull
-推送命令至遠端，效率提升，維運要求高
-
-### Ansible-vault
-管理加密解密 yml 檔案
-
-```shell
-$ ansible-vault encrypt hello.yml 
-New Vault password: 
-Confirm New Vault password: 
-Encryption successful
-cch@LAPTOP-J7ES249S:/mnt/c/Users/ASUS/Desktop/ansible$ cat hello.yml 
-$ANSIBLE_VAULT;1.1;AES256
-66383231303264626562363439326239336137366536623731646138613834336665653665643233
-663...162
-$ ansible-vault view hello.yml # 查看
-$ ansible-vault edit hello.yml # 編輯
-$ ansible-vault rekey hello.yml # 重新設置密碼
-```
-這樣無法直接執行 playbook，需要透過解密
-
-```shell
-$ ansible-vault decrypt hello.yml        
-```
-
-### Ansible-console
-```shell
-$ ansible-console 
-Welcome to the ansible console.
-Type help or ? to list commands.
-
-cch@all (3)[f:5]$ # all 表示所有清單，(3) 表示清單中主機數，[f:5] 表示可以同時執行主機數量
-cch@all (3)[f:5]$ cd webserver # 切換清單
-cch@webserver (2)[f:5]$
-cch@webserver (2)[f:5]$ command hostname # 執行 command 模組
-192.168.134.145 | CHANGED | rc=0 >>
-node01
-192.168.134.143 | CHANGED | rc=0 >>
-cch
-```
-相似於前面 ansible 指令的做法，只是環境不同而以
-
 ## Ansible-playbook
-嘗試定義任務
+嘗試定義任務，[hello.yml 範例](hello.yml)
 
 ```shell
 $ ansible-playbook hello.yml 
