@@ -336,9 +336,14 @@ cch
 
 ## 常用模組
 
-- command
-    - 對於管道或重定向、變量等是不支援的
-    - 預設
+預設使用 `command` 可以藉由配置看要切換成 shell 或是 script 等
+```bash
+# Default module to use when running ad-hoc commands
+#module_name = command
+```
+### command
+- 對於管道或重定向、變量等是不支援的
+- 預設
 ```shell=
 cch@cch:~$ ansible all -a 'mkdir ansible-test'
 [WARNING]: Consider using the file module with state=directory rather than
@@ -357,7 +362,7 @@ total 4
 drwxrwxr-x 2 cch cch 4096 Oct 28 07:45 ansible-test
 ```
 
-- shell
+### shell
 ```shell=
 cch@cch:~$ ansible all -m shell -a 'ls | wc -l'
 192.168.134.144 | CHANGED | rc=0 >>
@@ -365,7 +370,8 @@ cch@cch:~$ ansible all -m shell -a 'ls | wc -l'
 192.168.134.145 | CHANGED | rc=0 >>
 1
 ```
-- script
+### script
+在遠端主機上執行 ansible 主機上的 script
 ```shell=
 cch@cch:~$ cat host.sh
 #!/bin/bash
@@ -397,8 +403,8 @@ cch@cch:~$ ansible all -m script -a './host.sh'
 }
 ```
 
-- Copy
-    - 主控端傳送資料到被控端
+### Copy
+- 主控端傳送資料到被控端，可解由 `owner` 和 `mode` 設定權限
 ```shell=
 cch@cch:~$ echo "test copy module" > test.txt
 cch@cch:~$ ansible all -m copy -a 'src=./test.txt dest=./ backup=yes' # backup 用於相同檔案時可備份
@@ -428,9 +434,11 @@ test.txt
 ansible-test
 test.txt
 ```
-- fetch
-    - 從被控端抓資料等
+### fetch
+- 從被控端抓資料到主控端
+
 上述模組的參數可藉由 `ansible-doc -s module_name` 查看
+
 ```shell=
 $ ansible all -m copy -a 'content="Hello" dest=./content.txt' # 為每個被控端產生 content.txt 檔案內容從 content 定義
 ...
@@ -445,13 +453,13 @@ cch@cch:~$ ls data/
 192.168.134.144  192.168.134.145
 ```
 似乎無法使用通配符
-- File
-    - 設置檔案、屬性
-    - state
-        - touch 建立檔案
-        - absent 刪除操作
-        - directory 建立目錄
-        - link 建立連接
+### File
+- 設置檔案、屬性
+- `state` 參數
+    - touch 建立檔案
+    - absent 刪除操作
+    - directory 建立目錄
+    - link 建立連接
 ```shell=
 cch@cch:~$ ansible all -m file -a 'name=./ansible-test/file.txt state=touch' # 建立
 192.168.134.144 | CHANGED => {
@@ -481,16 +489,26 @@ cch@cch:~$ ansible all  -a 'ls ./ansible-test/'
 192.168.134.145 | CHANGED | rc=0 >>
 
 ```
+### unarchive
+可實現解壓縮。
+- 將 ansible 主機上的壓縮包傳到被控端主機後解壓縮至特定目錄，copy 設置為 yes
+- 將被控端上的某壓縮包解壓至特定指定路徑，copy 設置為 no
 
-- Hostname
-- Cron
-- Yum 
-- Service
-    - 管理服務
-- User
-    - 管理使用者
-- Group
-    - 管理群組
+```bash
+ansible srv -m unarchive -a 'src=壓縮檔路徑 dest=被控端目標位置'
+```
+
+而 `archive` 則是壓縮模組。
+
+### Hostname
+### Cron
+### Yum 
+### Service
+- 管理服務
+### User
+- 管理使用者
+### Group
+- 管理群組
 
 ## Ansible-playbook
 嘗試定義任務，[hello.yml 範例](hello.yml)
