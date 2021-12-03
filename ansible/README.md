@@ -501,15 +501,29 @@ ansible srv -m unarchive -a 'src=壓縮檔路徑 dest=被控端目標位置'
 而 `archive` 則是壓縮模組。
 
 ### Hostname
+```bash
+ansible ${IP} -m hostname -a 'name=local.com'
+```
 ### Cron
-### Yum 
+用於排程，期支援時間有 minute、hour、day、month、weekday
 ### Service
 - 管理服務
+```bash=
+ansible all -m service -a "name=nginx state=stared"
+```
 ### User
 - 管理使用者
+
+```bash
+ansible dev -m user -a 'name=user1 comment="dev user" uid=3000 home=/app/user1 group=root'
+```
 ### Group
 - 管理群組
 
+```bash
+ansible dev -m group -a 'name=nginx gid=100 system=yes'
+ansible dev -m group -a 'name=nginx state=absent'
+```
 ## Ansible-playbook
 嘗試定義任務，[hello.yml 範例](hello.yml)
 
