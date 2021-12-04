@@ -547,10 +547,10 @@ PLAY RECAP *********************************************************************
 ### 核心元素
 - Hosts 執行主機的列表
 - Tasks 任務集合
-- Varniables 內置變量或自定義變量在 playbook 中調用
+- Variables 內置變量或自定義變量在 playbook 中調用
 - Templates 模板，可替換模板檔案中的變量並實現一些簡單邏輯檔案
-- Hendlers 和 notify 結合使用，由特定條件觸發的操作，滿足才能執行，否則不執行
-- tags 跳過某些執行片段
+- Handlers 和 notify 結合使用，由特定條件觸發的操作，滿足才能執行，否則不執行
+- tags 跳過某些執行片段，ansible 具有冪等性，因此會跳過沒有變動的地方
 
 
 ansible-playbook 操作
@@ -563,9 +563,59 @@ playbook: hello.yml
     tasks:
       hello     TAGS: []
 ```
+### Hosts
+Playbook 中的每一個 play 的目的都是為了讓特定主機以某個指定的使用者身分執行任務。hosts 用於指定要執行指定任務的主機
 
-### Hendlers 和 notify
-- Hendlers 是 task 列表，當前關注的資源發生變化時，會才取一定的操作
+主機清單
+```bash
+cch.example.com
+172.10.10.12
+172.10.10.*
+webservers:dbserver
+webservers:&dbserver # 兩個群組的交集
+webservers:!stage # 在 webservers 群組，但不在 stage 
+```
+
+```yaml
+- hosts: webservers:dbserver
+```
+
+### remote_user 
+可使用用於 *host* 和 *task* 中。可指定使用 root 權限在被控端執行任務。也可在 sudo 時使用 sudo_user 指定 sudo 時切換使用者
+
+```yaml
+- hosts: webservers
+  remote_user: root
+
+  tasks:
+    - name: test connect
+      ping:
+      remote_user: naruto
+      sudo: yes
+      sudo_user: madara
+```
+
+### task 清單和 action 組件
+play 的主體是 *task list*，當中有一或多個 *task*，每個 task 都按順序在 hosts 中指定的所有被控端執行，會在所有被控端執行完第一個 task 後，才會接續執行第二個。
+
+*task* 的目的是使用指定參數執行模組。
+
+其寫法有兩種
+- action: module args
+- module: args
+
+```yaml
+---
+- hosts: webservers
+  remote_user: root
+  tasks:
+    - name: install httpd
+      yum: name:httpd # this
+    - name: start httpd
+      service: name:httpd state=started enabled=yes # this
+```
+### Handlers 和 notify
+- Handlers 是 task 列表，當前關注的資源發生變化時，會才取一定的操作
 - Notify 此 action 可用於每個 play 的最後被觸發。在 notify 中列出的操作稱為 handler，也即 notify 中調用 handler 中定義的操作
 
 以下為範例，以下說明當配置檔進行修正後傳輸，需要重啟服務才會生效，假設沒定義 notify 時，只要修改配置檔，其執行過的 task 不會有對應動作。

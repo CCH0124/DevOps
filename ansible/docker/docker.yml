@@ -1,16 +1,18 @@
 ---
-- hosts: all
-  remote_user: cch
+- hosts: 192.168.56.201
+  remote_user: vagrant
   become: true
   become_method: sudo
-
+  vars:
+    image: ubuntu
+    
   tasks:
     - name: Install aptitude using apt
       apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
     - name: Install required system packages
       apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
+      loop: [ 'ca-certificates', 'curl', 'gnupg ', 'lsb-release']
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -23,4 +25,18 @@
         state: present
 
     - name: Update apt and install docker-ce
-      apt: update_cache=yes name=docker-ce state=latest
+      apt: update_cache=yes name={{ item }} state=latest
+      loop: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    
+    - name: Pull default Docker image
+      docker_image:
+        name: "{{ image }}"
+        source: pull
+    
+    - name: Create default containers
+      docker_container:
+        name: "{{ image }}{{ item }}"
+        image: "{{ image }}"
+        command: "sleep 86400"
+        state: present
+      with_sequence: count=2
