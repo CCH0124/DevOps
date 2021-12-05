@@ -618,7 +618,7 @@ play 的主體是 *task list*，當中有一或多個 *task*，每個 task 都�
 - Handlers 是 task 列表，當前關注的資源發生變化時，會才取一定的操作
 - Notify 此 action 可用於每個 play 的最後被觸發。在 notify 中列出的操作稱為 handler，也即 notify 中調用 handler 中定義的操作
 
-以下為範例，以下說明當配置檔進行修正後傳輸，需要重啟服務才會生效，假設沒定義 notify 時，只要修改配置檔，其執行過的 task 不會有對應動作。
+以下為範例，以下說明當配置檔進行修正後傳輸，需要重啟服務才會生效，假設沒定義 notify 時，只要修改配置檔，其執行過的 task 不會有對應動作。`handlers` 就像 `tasks` 一樣定義多個任務，而 `notify` 可以引用多個 `handlers` 任務。 
 ```yaml
 ---
 - hosts: webserver
@@ -634,18 +634,20 @@ play 的主體是 *task list*，當中有一或多個 *task*，每個 task 都�
       service: name=httpd state=started enable=yes
   handlers:
     - name: restart service
-     service:  name=httpd state=restart
+      service:  name=httpd state=restart
 ```
 
 - tags 可以多個 task 組成，在執行時可透過指定 tags 名稱來做該 tag 擁有的 task
 
 ### 變數使用
 
-其範例是 variable-use.yml。因為 `sudo` 問題暫時修改 `sudoers` 將其變成 `%sudo   ALL=(ALL:ALL) NOPASSWD:ALL`。variable-use2.yml 是在 yml 中定義變數，因此在執行時不需帶入變數值。
+其範例是 [variable-use.yml](var/variable-use.yml)。因為 `sudo` 問題暫時修改 `sudoers` 將其變成 `%sudo   ALL=(ALL:ALL) NOPASSWD:ALL`。variable-use2.yml 是在 yml 中定義變數，因此在執行時不需帶入變數值。`{{}}` 而該符號是用來調用變數。
 
+透過 -e 選項，範例[variable-use.yml](var/variable-use.yml)
 ```shell
-$ ansible-playbook -e 'pkname=vsftpd' variable-use.yml
+$ ansible-playbook -e 'pkname=vsftpd' variable-use.yml # 
 ```
+
 >如果有 timeout 的話，需嘗試將 ansible.cfg 的 timeout 在調高一下
 
 定義變數方式有以下
@@ -653,9 +655,9 @@ $ ansible-playbook -e 'pkname=vsftpd' variable-use.yml
 - /etc/ansible/hosts
 ```shell
 [webserver]
-192.168.134.143 http_port=81
-192.168.134.145 http_port=82
-[webserver:vars] # 針對於 webserver 的統一變數
+192.168.134.143 http_port=81 # http_port 變數定義
+192.168.134.145 http_port=82 # http_port 變數定義
+[webserver:vars] # 針對於 webserver 的統一變數，優先級最高
 nodename=www
 domain=cch.com
 ```
@@ -663,7 +665,7 @@ domain=cch.com
 - playbook 中定義
 - role 中定義
 
-而外定義一個專門存放變數的檔案(vars.yml)，使用 `vars_files` 引入，使用 include_vars.yml 做為範例
+而外定義一個專門存放變數的檔案([vars.yml](var/vars.yml))，使用 `vars_files` 引入，使用 [include_vars.yml](var/include_vars.yml) 做為範例
 
 ```shell
 $ ansible-playbook include_vars.yml
