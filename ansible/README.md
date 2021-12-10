@@ -748,7 +748,7 @@ LISTEN   0        128                 [::]:22               [::]:*
 條件測試用
 
 ##### with_items
-迭代，重複性任務時可以使用，範例為 with_items.yml
+迭代，重複性任務時可以使用，範例為 [with_items.yml](item/with_items.yml)
 
 ```shell
 $ ansible webserver -m shell -a 'ls ./ | grep "file"'
@@ -836,6 +836,15 @@ server{
 $ ls /etc/ansible/
 ansible.cfg  hosts  roles
 ```
+roles 下可能會有這些目錄
+- files
+- templates
+- tasks
+- handlers
+- vars
+- meta
+- default
+
 
 我們以 nginx-roles.yml 為主要的運行檔案，roles 目錄為配置檔案
 ```shell
