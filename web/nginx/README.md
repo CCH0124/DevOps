@@ -8,6 +8,17 @@ add_header X-Content-Type-Options "nosniff" always;
 add_header Referrer-Policy "no-referrer-when-downgrade" always;
 add_header Content-Security-Policy "default-src * data: 'unsafe-eval' 'unsafe-inline'" always;
 add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+add_header Permissions-Policy "geolocation 'self'; camera 'self'; speaker 'self';";
+# C
+add_header  Set-Cookie "HttpOnly";
+add_header  Set-Cookie "Secure";
+
+#CORS
+add_header 'Access-Control-Allow-Origin' '*';
+add_header 'Access-Control-Allow-Methods' 'GET,POST,DELETE,PUT,OPTIONS';
+add_header 'Access-Control-Allow-Headers' 'X-Requested-With, Content-Type, X-Codingpedia, requesttype, accept, access-control-allow-headers, authorization';
+add_header 'Access-Control-Allow-Credentials' 'true';
+
 ```
 
 ## gzip
