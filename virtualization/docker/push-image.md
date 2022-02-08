@@ -1,4 +1,4 @@
-1. 登入倉庫
+1. 登入倉庫，以 gitlab 為例
 ```bash
 docker login ${DOMAIN:PORT}
 ```
