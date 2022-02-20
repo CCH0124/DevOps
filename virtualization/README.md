@@ -1,0 +1,4 @@
+- Docker：Container Runtime + tool for managing containers and images 
+- Containerd：Container Runtime
+- Crictl：CLI for CRI-compatible Container Runtimes
+- Podman：tool for managing containers and images 
