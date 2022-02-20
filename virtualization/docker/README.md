@@ -1,4 +1,6 @@
 # Docker 
+- [namespace](https://www.youtube.com/watch?v=MHv6cWjvQjM&ab_channel=Docker)
+
 ## OS 層內建立虛擬環境
 Linux 在核心內建的 Control Group 和 Namespaces 機制，正是用來分配 Host OS 運算資源的機制。
 
