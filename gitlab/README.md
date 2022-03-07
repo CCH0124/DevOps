@@ -1,12 +1,12 @@
 ## 參數
 - variables 定義環境變數
-```bash
+```yaml
 variables:
   API_HOME: "code/backend/API_Server"
   FRONT_HOME: "code/frontend"
 ```
 - stages 流水線順序
-```bash
+```yaml
 stages:
   - rd:docker-build-fe
   - test
@@ -18,7 +18,7 @@ stages:
 ```
 - stage 流水線順序的哪個階段
 - before_script
-```bash
+```yaml
 before_script: # 全域
 - export GRADLE_USER_HOME=`pwd`/$API_HOME/.gradle
 before_script: # 某個流水線下
@@ -30,7 +30,7 @@ before_script: # 某個流水線下
 ```
 - image 使用的 Image
 - services 使用的 docker service 鏡像
-```bash
+```yaml
 image: docker:latest
   services:
     - docker:dind
@@ -40,7 +40,7 @@ image: docker:latest
 - script 要執行的流程（建置 Image -> 推 Image）
 - rules 觸發的條件
 - artifacts 歸檔檔案，指定成功應該附加置 job 檔案或是目錄
-```bash
+```yaml
 unitTest:
   stage: test
   image: gradle:7.3.1-jdk11
@@ -61,7 +61,7 @@ unitTest:
 ```
 - only 什麼條件下觸發
 - except 	什麼條件下不觸發
-```bash
+```yaml
 only:
     refs:
       - dev # 分支
@@ -74,10 +74,18 @@ only:
 
 ```
 - tags 透過標籤來決定用什麼 Runner
-```bash
+```yaml
 tags:
     - aws
     - m4-large
 ```
 - when 什麼時候作業
 - dependencies 依賴那些流水線的流程
+- include 可以將其它 yaml 載入到當前的 `.gitlab-ci.yml` 配置中，載入方式有以下
+  - local 從同一專案中透過路徑載入檔案
+  - file 從其它專案中載入檔案
+  - remote 從公開連結的 URL 載入檔案
+  - template 載入 GitLab 官方提供模板
+```yaml
+include: 'template.yml'
+```
