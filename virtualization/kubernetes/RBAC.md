@@ -20,6 +20,8 @@ create Key -> create CSR -> API（Kubernetes）->download CRT from api -> use CR
 - get, list (read-only)
 - create, update, patch, delete, deletecollection (read-write)
 
+在一個 namespace 下可以包含多個 Role 和 RoleBinding 對象，集群級別也是可存在多個 ClusterRole 和 ClusterRoleBinding。一個使用者可以經由 RoleBinding 或 ClusterRoleBinding 關連至多個角色，並實現多重授權。
+
 ## ServiceAccount Permissions
 
 有兩個存在的 namespace 分別是 `ns1` 和 `ns2`。建立一個 *ServiceAccount* `pipeline` 在那兩個 namespace 上，這些 SA 可查看整個集群幾乎所有內容。可以為此使用默認的 ClusterRole *view*。允許這些 SA 在 ns1 和 ns2 中創建和刪除 *Deployments* 資源。
