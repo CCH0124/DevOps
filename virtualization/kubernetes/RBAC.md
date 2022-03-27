@@ -180,3 +180,52 @@ role.rbac.authorization.k8s.io/list-secret-smoke created
 $ kubectl -n applications create rolebinding list-secret-smoke --role=list-secret-smoke --user=smoke
 ```
 
+## CertificateSigningRequests sign manually
+K8s 中的使用者透過 CRT 和其中的 CN/CommonName 進行管理。集群 CA 需要簽署這些 CRT。
+1. Create a KEY (Private Key) file
+2. Create a CSR (CertificateSigningRequest) file for that KEY
+3. Create a CRT (Certificate) by signing the CSR. Done using the CA (Certificate Authority) of the cluster
+
+```bash
+$ openssl genrsa -out /root/60099.key 2048
+$ openssl req -new -key 60099.key -out 60099.csr
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:
+Organizational Unit Name (eg, section) []:
+Common Name (e.g. server FQDN or YOUR name) []:60099@internal.users
+Email Address []:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+```
+
+上一步已簽發 CSR，接著簽發 60099.crt 生成 CRT。
+
+Create a new context for kubectl named 60099@internal.users which uses this CRT to connect to K8s.
+
+```bash
+$ openssl x509 -req -in 60099.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out 60099.crt -days 365
+Signature ok
+subject=C = AU, ST = Some-State, O = Internet Widgits Pty Ltd, CN = 60099@internal.users
+Getting CA Private Key
+```
+context 設定
+```bash
+$ kubectl config set-credentials 60099@internal.users --client-key=60099.key --client-certificate=60099.crt
+User "60099@internal.users" set.
+controlplane $ kubectl config set-context 60099@internal.users --cluster=kubernetes --user=60099@internal.users
+Context "60099@internal.users" created.
+$ kubectl --context=60099@internal.users get ns 
+Error from server (Forbidden): namespaces is forbidden: User "60099@internal.users" cannot list resource "namespaces" in API group "" at the cluster scope
+```
