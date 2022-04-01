@@ -229,3 +229,91 @@ Context "60099@internal.users" created.
 $ kubectl --context=60099@internal.users get ns 
 Error from server (Forbidden): namespaces is forbidden: User "60099@internal.users" cannot list resource "namespaces" in API group "" at the cluster scope
 ```
+
+## CertificateSigningRequests sign via API
+```bash
+$ openssl genrsa -out /root/60099.key 2048
+$ openssl req -new -key 60099.key -out 60099.csr 
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:
+Organizational Unit Name (eg, section) []:
+Common Name (e.g. server FQDN or YOUR name) []:60099@internal.users
+Email Address []:
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+```
+
+Create a K8s `CertificateSigningRequest` resource named `60099@internal.users` and which sends the `/root/60099.csr` to the API.
+
+```bash
+apiVersion: certificates.k8s.io/v1
+kind: CertificateSigningRequest
+metadata:
+  name: 60099@internal.users
+spec:
+  groups:
+  - system:authenticated
+  request: {base64 csr}
+  signerName: kubernetes.io/kube-apiserver-client
+  usages:
+  - client auth
+```
+
+get CRT file
+```bash
+$ kubectl apply -f csr.yaml
+$ kubectl get certificatesigningrequests.certificates.k8s.io 
+NAME                   AGE   SIGNERNAME                                    REQUESTOR                  REQUESTEDDURATION   CONDITION
+60099@internal.users   45s   kubernetes.io/kube-apiserver-client           kubernetes-admin           <none>              Pending
+csr-hs6d2              24d   kubernetes.io/kube-apiserver-client-kubelet   system:node:controlplane   <none>              Approved,Issued
+controlplane $ kubectl certificate approve 60099@internal.users           
+certificatesigningrequest.certificates.k8s.io/60099@internal.users approved
+$ kubectl describe csr 60099@internal.users
+Name:         60099@internal.users
+Labels:       <none>
+Annotations:  kubectl.kubernetes.io/last-applied-configuration={"apiVersion":"certificates.k8s.io/v1","kind":"CertificateSigningRequest","metadata":{"annotations":{},"name":"60099@internal.users"},"spec":{"groups":["system:authenticated"],"request":"LS0tLS1CRUdJTiBDRVJUSUZJQ0FURSBSRVFVRVNULS0tLS0KTUlJQ3FUQ0NBWkVDQVFBd1pERUxNQWtHQTFVRUJoTUNRVlV4RXpBUkJnTlZCQWdNQ2xOdmJXVXRVM1JoZEdVeApJVEFmQmdOVkJBb01HRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpERWRNQnNHQTFVRUF3d1VOakF3Ck9UbEFhVzUwWlhKdVlXd3VkWE5sY25Nd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0SUJEd0F3Z2dFS0FvSUIKQVFDMFNmVk0xTVk4QmpQK3BVRHlIZXhraXEwL0dPOThmRjVqSC9MdFViNlVFdFVvNHA0eWlKMmxKdDV5ZVV3UQpQb1pHZDB3ZnphQ3YrdWRiZkdQVnlOSlpqSGVLRTVsZmJ6b3Fkb05Pc0JYdkNXNTd6R3ZQNFd6bmFRcDE1MjJJCnZWYVhyYkJRdzlvTE5GWkRqSkd3MEFINlhkeC9FM2k4dUZOUFhtb0JweXNQUDRoRU5GRFg0cjhtZHh2S1hvd3MKbFJ6QytLOW1sL2FHTFcraTF1bVhqVTRZOHlhOW5tSzhNbXA4aVJwYmJPMVpwS2ZKZUQ4bjRzWElFU1VXcEJlMQpPaDFNSjZReXR2K0s1ckgxRGdUWGJISEJlU1dCbmNNaStqbWVyWmZPd3dRUEFUSytybVJEYlV4R1JyemhMSTRBCnZ4akpkL0NKeVlya2d4ZE5lTlFsWlJqVkFnTUJBQUdnQURBTkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQVJZd0kKK29WZGQ1UUlYNkw4NVNQYWlaOUgxZEJDWUhLUG1CSm1DSEJVWVVraXgrYm9ZdkVnaElkd1kyL0IydGY0RlJqMAozUTVFZkdhaUtFT3BTR2s0emlpYm9lWEZ3Y0YxQy8yeEh5YjB6UkRMUFpxTWhMMGMxN0lkYkROUm4xc3BxTVlIClNsZXpkL0dDVE8xMkljbE4zYlNrNHlvVjBJQ1paYkE5c2wyeGFBTVNhVmxPaFFsRHRtNTczTUlZblZNR2xVY1YKZ2NwUnhONEs1ZndwZStFZzZzMnVvR0RSRUx6WTNPWWpKcXAxZDNBeXdqTFNYZUdwUFZvMGFsdHUySzFaMmYyTApOUW5XN05iWTBxc2w0ZGI0ODdXMHFEUGF2L3NiaERMZVJ2YjhpM0hPRDNtQWVPKzBDWllNOWxZNnRUcEdLNlRVClpmR3BtN0w1Q1ZPRCtCVnR4dz09Ci0tLS0tRU5EIENFUlRJRklDQVRFIFJFUVVFU1QtLS0tLQo=","signerName":"kubernetes.io/kube-apiserver-client","usages":["client auth"]}}
+
+CreationTimestamp:  Fri, 01 Apr 2022 01:46:43 +0000
+Requesting User:    kubernetes-admin
+Signer:             kubernetes.io/kube-apiserver-client
+Status:             Approved,Issued
+Subject:
+         Common Name:    60099@internal.users
+         Serial Number:  
+         Organization:   Internet Widgits Pty Ltd
+         Country:        AU
+         Province:       Some-State
+Events:  <none>
+
+$ kubectl get certificatesigningrequests.certificates.k8s.io 60099@internal.users -ojsonpath="{.status.certificate}" | base64 -d > 60099.crt
+```
+
+new context
+```bash
+$ kubectl config set-credentials 60099@internal.users --client-key=60099.key --client-certificate=60099.crt
+User "60099@internal.users" set.
+controlplane $ kubectl config set-context 60099@internal.users --cluster=kubernetes --user=60099@internal.users
+Context "60099@internal.users" created.
+$ kubectl config get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO               NAMESPACE
+          60099@internal.users          kubernetes   60099@internal.users   
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin       
+$ kubectl config use-context 60099@internal.users
+Switched to context "60099@internal.users".
+controlplane $ kubectl config get-contexts
+CURRENT   NAME                          CLUSTER      AUTHINFO               NAMESPACE
+*         60099@internal.users          kubernetes   60099@internal.users   
+          kubernetes-admin@kubernetes   kubernetes   kubernetes-admin
+```
