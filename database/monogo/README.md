@@ -33,3 +33,8 @@ mongos> db.gnss.deleteMany({ timestamp: { $lt: 1652971320000}}) # 刪除該 coll
 { "acknowledged" : true, "deletedCount" : 90930 }
 
 ```
+## Add User
+
+```bash
+db.createUser({ user: "test", pwd: "00000000", roles: [{ role: "readWrite", db: "shop" },{ role: "read", db: "aiot" }]})
+```
