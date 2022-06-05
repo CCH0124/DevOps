@@ -8,7 +8,13 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 
 ## 訊息隊列模式
 1. 點對點模式
-消費者主動拉取數據，訊息收到後清除訊息
+- 消費者主動拉取數據，訊息收到後清除訊息
+
+![image](https://user-images.githubusercontent.com/17800738/172054427-c6f63644-08b2-4327-9e42-30aa471a4850.png)
 
 2. 發布/訂閱模式
-可以有多個 topic 主題
+- 可以有多個 topic 主題
+- 消費者消費後，不刪除數據
+- 每個消費者獨立，都可以消費到數據
+
+![image](https://user-images.githubusercontent.com/17800738/172054324-7140ec88-e639-4f12-8f0e-1419fd9b2352.png)
