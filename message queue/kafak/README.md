@@ -18,3 +18,33 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 - 每個消費者獨立，都可以消費到數據
 
 ![image](https://user-images.githubusercontent.com/17800738/172054324-7140ec88-e639-4f12-8f0e-1419fd9b2352.png)
+
+## Kafka 架構
+
+![](https://i.imgur.com/uOo5OlD.png)
+
+1. 為了方便擴展，提高吞吐量，一個 topic 分為多個 partition
+2. 配合分區(partition)的設計，提出消費者組概念，每個組內的消費者併行消費
+3. 為提高可用性，為每個 partition 增加多個副本
+
+- Producer
+    - 消息生產者，發送消息到 kafka 的客戶端
+- Consumer
+    - 消費者，向 kafka 取消息的客戶端
+- Topic
+    - 一個隊列
+    - 綠色區塊顯示出隊列形式
+- Cunsumer Group(CG)
+    - 增加消費能力，多個消費者取數據，增加效率，最後只要全部合起來就是全部的數據
+    - Kafka 是以消費組概念
+    - 一個 topic 可有多個 CG
+- Broke
+    - kafka 的一台機器
+- Partion
+    - 實現擴展性，一個大的 topic 可分配到多個 broker 上
+    - 每個 partion 是一個有序隊列
+- Leader 負責接收讀寫；Follower 則是備份數據
+  - Leader 會被 producer、consumer 消費
+- Zoopkeeper 
+    - 儲存群集訊息
+    - 消息隊列訊息，紀錄消費者消費的數據，可以避免重新消費
