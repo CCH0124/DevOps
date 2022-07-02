@@ -58,3 +58,10 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 1. 直接指明 partition 位置寫數據
 2. 透過 key 的 hash 值與 topic 的 partiotion 數量取餘數來獲取要存取數據的 partiotion 位置
 3. 上述兩者都沒有，會採用 `Sticky Partition` 隨機選分區儲存，並盡可能使用該分區，待該分區 batch 滿(預設 16k)或是 `linger.ms` 時間到，kafka 在隨機一個分區使用(和上次的分區不同)
+
+## 生產者提高吞吐量
+- batch.size 預設 16kb
+- linger.ms 預設 0
+    - 等待時間
+- compression.type 壓縮 snappy
+- RecordAccumlator 緩衝區大小  
