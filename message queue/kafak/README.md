@@ -48,3 +48,9 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 - Zoopkeeper 
     - 儲存群集訊息
     - 消息隊列訊息，紀錄消費者消費的數據，可以避免重新消費
+## Kafka 分區好處
+1. 合理使用儲存資源，每個 Partition 在一個 Broker 上儲存，可把大量數據按照分區切割成一塊一塊數據儲存在多台 Broker 上。合理控制分區的任務，可以有*負載均衡*效果。
+2. 提高並行度，生產者可以以分區單位發送數據；消費者可以以分區為單位進行消費數據
+
+下圖表示有 100T 資料，切成三塊，每塊都 33GB 並對應每個 broker。每個 Broker 都有自己的儲存空間，適當的分配資源可有。
+![image](https://user-images.githubusercontent.com/17800738/177004744-102d01fb-b091-4e8a-8800-c1f88e33cf3c.png)
