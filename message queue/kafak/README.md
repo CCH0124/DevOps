@@ -54,3 +54,7 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 
 下圖表示有 100T 資料，切成三塊，每塊都 33GB 並對應每個 broker。每個 Broker 都有自己的儲存空間，適當的分配資源可有。
 ![image](https://user-images.githubusercontent.com/17800738/177004744-102d01fb-b091-4e8a-8800-c1f88e33cf3c.png)
+
+1. 直接指明 partition 位置寫數據
+2. 透過 key 的 hash 值與 topic 的 partiotion 數量取餘數來獲取要存取數據的 partiotion 位置
+3. 上述兩者都沒有，會採用 `Sticky Partition` 隨機選分區儲存，並盡可能使用該分區，待該分區 batch 滿(預設 16k)或是 `linger.ms` 時間到，kafka 在隨機一個分區使用(和上次的分區不同)
