@@ -129,3 +129,18 @@ Leader 維護一個動態的 in-sync replica set(ISR)，表示和 Leader 保持�
     - 可以保證數據不重複，但不能保證數據不丟失
 - Exactly Once
     - 要求數據不重複且不丟失
+>透過冪等性和事務的方式來解決數據重複性
+
+### 冪等性
+冪等性是指生產者(producer)不論向 Broker 發送多少次重複數據，Broker 只會持久化一次該數據，保證不重複。
+
+Exactly Once = 冪等性 + At Least Once 
+
+**重複數據判斷標準**: 具有相同 `<PID,Partition,SeqNumber>` 相同主鍵訊息提交時，Broker 只會持久化一條。因此*冪等性只能保證在單分區單會話(Kafka 的 PID)內不重複*。下圖為範例，紫框數據是重複的因此，他會在記憶體中被移除
+
+![image](https://user-images.githubusercontent.com/17800738/177030804-387b609f-ae5f-401a-a448-4099d70d28d4.png)
+
+>enable.idempotenc 是設置冪等性參數預設是 true
+
+### Kafka 事務
+如果單以冪等性是不夠的，假設 kafka 掛掉在重啟還是會有重複數據的可能。如果不想產生重複數據只能用事務方式。因此**開啟事務，必須開啟冪等性**
