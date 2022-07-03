@@ -144,3 +144,11 @@ Exactly Once = 冪等性 + At Least Once
 
 ### Kafka 事務
 如果單以冪等性是不夠的，假設 kafka 掛掉在重啟還是會有重複數據的可能。如果不想產生重複數據只能用事務方式。因此**開啟事務，必須開啟冪等性**
+
+![image](https://user-images.githubusercontent.com/17800738/177032150-e967fc27-47d8-44d0-99da-6cccd002d9c2.png)
+
+事務協調器，每個 Broker 都有我們要如何知道誰要處裡 ? 會根據 `__Transaction_state-partition-Leader` 主題，預設有 50 個分區，每個分區負責一部分事務。事務的劃分是根據`transactional.id` 的 hashcode%50，計算該事務屬於哪個分區。該分區 Leader 副本所在的 broker 節點即為這個 `transactional.id` 對應的 `Transaction Coordinator` 節點。
+
+`transactional.id` 是客戶端提供的全域唯一值。Producer 在使用事務功能前必須自定義唯一 `transactional.id`。這樣即使客戶端掛了，他重啟後也能繼續處裡未完成的事務。
+
+>Transaction Coordinator 事務協調器(每個 Broker 都有)；__Transaction_state-partition-Leader 儲存事務訊息的特殊主題
