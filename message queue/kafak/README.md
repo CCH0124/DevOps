@@ -75,3 +75,10 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
     - 等待時間
 - compression.type 壓縮 snappy
 - RecordAccumlator 緩衝區大小  
+
+## 數據可靠
+當數據發送至 Kafka Cluster 中後，可以透過應答方式來確保數據是否被處理，在 Kafka 中可以透過 `acks` 字段
+- 0 生產者發送給 Broker 的數據，不須等待數據寫入硬碟後回覆
+- 1 生產者發送給 Broker 的數據，Leader 收到數據後回覆
+- -1 生產者發送給 Broker 的數據，Leader+ 和 isr 隊列裡面的所有節點收齊數據後回覆
+- all 等價於 `-1`
