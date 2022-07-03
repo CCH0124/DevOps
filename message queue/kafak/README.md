@@ -82,3 +82,50 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 - 1 生產者發送給 Broker 的數據，Leader 收到數據後回覆
 - -1 生產者發送給 Broker 的數據，Leader+ 和 isr 隊列裡面的所有節點收齊數據後回覆
 - all 等價於 `-1`
+
+### acks is 0
+生產者發送給 Broker 的數據，不須等待數據寫入硬碟後回覆
+
+![image](https://user-images.githubusercontent.com/17800738/177025990-4f2969c2-77ef-458a-804f-0a8f6347ece2.png)
+
+假設 Leader 死掉後，整個數據都丟了。
+
+**可靠性差，但效率高**
+
+### acks is 1
+生產者發送給 Broker 的數據，Leader 收到數據後回覆
+
+![image](https://user-images.githubusercontent.com/17800738/177026066-923ce48a-393c-4edb-ace4-447992061ac4.png)
+
+Follower 尚未同步也沒關係。但如果在 `ack` 完成後，尚未與 Follower 進行同步，此時 Leader 死了。雖然機制會重 Follower 選新的 Leader，但因為尚未同步，新 Leader 不會有上圖的 world 訊息，生產者也因為收到 `ack` 也認為訊息發送成功。
+
+**可靠性中，但效率中**
+### acks is -1 or all
+
+生產者發送給 Broker 的數據，Leader+ 和 isr 隊列裡面的所有節點收齊數據後回覆
+
+![image](https://user-images.githubusercontent.com/17800738/177026278-ac762a6e-e54d-4f3e-b201-ffbf92f587ea.png)
+
+在與 Fllower 同步數據時，一個 Follower 突然故障，遲遲不能和 Leader 同步，這要怎解決 ?
+Leader 維護一個動態的 in-sync replica set(ISR)，表示和 Leader 保持同步的 Follower 加 Leader 集合(ex. leader:0, isr:0,1,2)。
+
+如果 Follower 長時間未與 Leader 發送通訊請求或同步訊息，則 Follower 將被踢出 ISR。可以由 `replica.lag.time.max.ms` 參數設置時間，預設 30s。
+
+>(ex. leader:0, isr:0,1,2) 對應上圖 0 表示 Leader，1 和 2 各別表示一個 Follower
+
+如果分區副本設置為 1，或 ISR 裡回覆最小副本數量為 1 (min.insync.replicas 預設為 1)，這樣會等同於 ack 為 1 的效果。
+
+**要做到完全可靠 = ACK 設置 -1 + 分區副本大於等於 2 + ISR 裡回覆最小副本數量大於等於 2**
+**可靠性高，但效率低**
+
+假設在回覆 ack 時，Leader 死了(數據都已經同步)，此時 Follower 挑選出一個 Leader，因為沒有 ack 回覆生產者在發送一次訊息，此時會產生*數據重複問題*。
+
+## 數據去重
+- At Least Once 
+    - ack 設置為 -1 + 分區副本大於等於 2 + ISR 裡回覆的最小副本大於等於 2
+    - 可以保證數據不丟失，但不能保證數據不重複
+- At Most Once 
+    - ack 設置為 0
+    - 可以保證數據不重複，但不能保證數據不丟失
+- Exactly Once
+    - 要求數據不重複且不丟失
