@@ -60,6 +60,16 @@ Kafka  是一個開源的分散式事件平台(Event Streaming Platform)，數�
 3. 上述兩者都沒有，會採用 `Sticky Partition` 隨機選分區儲存，並盡可能使用該分區，待該分區 batch 滿(預設 16k)或是 `linger.ms` 時間到，kafka 在隨機一個分區使用(和上次的分區不同)
 
 ## 生產者提高吞吐量
+
+![image](https://user-images.githubusercontent.com/17800738/177021013-07307858-4b29-4a33-8a96-dbc872e2d7bf.png)
+
+`linger.ms` 預設下是 0，所以只要倉庫有物件，火車就開始拉，一次拉一個。`batch.size` 在 `linger.ms` 預設下是不起作用。Kafka 預設情況下是一次拉一個。
+
+![image](https://user-images.githubusercontent.com/17800738/177021103-0242dfbe-b7d7-4700-84c9-6a80da6c0d75.png)
+
+如果將 `linger.ms` 設置 5~100 ms，`batch.size` 為 16k。就可以如上圖所示，火車每一批次拉 `batch.size` 設置的上限，這樣就可以提高效率。但是並非 `linger.ms`、`batch.size` 設置越高越好，因為這樣會導致延遲出現，在這場景假設 `linger.ms` 為 1s 那在火車上的物件要等待 1s 才能被送達到目的，相對於 kafka 預設情況下要來的低效。假設我們對數據進行 `compression.type` 也就是壓縮，這樣火車拉走的物件相對又變多了。
+
+
 - batch.size 預設 16kb
 - linger.ms 預設 0
     - 等待時間
