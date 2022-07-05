@@ -152,3 +152,6 @@ Exactly Once = 冪等性 + At Least Once
 `transactional.id` 是客戶端提供的全域唯一值。Producer 在使用事務功能前必須自定義唯一 `transactional.id`。這樣即使客戶端掛了，他重啟後也能繼續處裡未完成的事務。
 
 >Transaction Coordinator 事務協調器(每個 Broker 都有)；__Transaction_state-partition-Leader 儲存事務訊息的特殊主題
+
+### 數據有序
+### 數據亂序
