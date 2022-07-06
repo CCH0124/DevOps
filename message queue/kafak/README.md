@@ -155,3 +155,6 @@ Exactly Once = 冪等性 + At Least Once
 
 ### 數據有序
 ### 數據亂序
+
+# Kafka Broker
+### Zookeeper 儲存 kafka 訊息
