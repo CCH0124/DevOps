@@ -157,4 +157,12 @@ Exactly Once = 冪等性 + At Least Once
 ### 數據亂序
 
 # Kafka Broker
-### Zookeeper 儲存 kafka 訊息
+### kafka 副本
+提高數據可靠性。預設為 1 個副本，太多副本會增加硬碟空間，增加網路數據傳輸，降低效率。Kafka 副本分為 *Leader*、*Follower*，生產者只會把數據發往 Leader，然後 Follower 找 Leader 同步數據。
+
+Kafka 分區中的所有數據副本稱為**AR(Assigned Replicas)**。
+> AR = ISR + OSR
+
+ISR，表示和 Leader 保持同步的 Follower 集合。如果 Follower 長時間未向 Leader 發送通訊請求或同步數據，則該 Followe 將從 ISR 移除，該時間閥值由 `replica.lag.time.max.ms` 參數決定，預設 30 秒。Leader 發生問題，會從 ISR 中選新的 Leader。
+
+OSR，表示 Follower 和 Leader 副本同步時，延遲過多的副本。
