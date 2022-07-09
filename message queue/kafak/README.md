@@ -219,3 +219,20 @@ Kafka Log 清除策略有 `delete`、`compact` 兩種
 
 2. compact 壓縮
 - log.cleanup.policy = compact 
+
+## 高校讀寫數據
+1. kafka 本身分散式集群，可以採用分區技術，併行度高
+2. 讀數據採用稀疏索引，可以快速定位要消費的數據
+3. 順序寫硬碟，即讀寫頭不必定位
+4. Page Cache 和 Zero-copy 技術
+
+![](https://twitter.com/alexxubyte/status/1506663791961919488)
+
+Zero-copy: Kafka 數據加工處理操作交給 kafka 生產者和消費者處理。**kafka Broker 應用層不關心儲存的數據，所以就不走應用層，相對傳輸效率提升**。
+Page Cache: Kafka 依賴 OS 提供的 Page Cache 功能。當上層有讀寫時，OS 只是將數據寫入 Page Cache。當讀操作發生時，先從 Page Cache 查找，如果不存在，再從硬碟讀取。實際上 Page Cache 是把盡可能多的空閒記憶體當作了硬碟緩存來使用。
+
+## Kafka 消費方式
+1. pull 模式 consumer 採用從 Broker 中主動拉取數據。
+2. push 模式 Kafka 沒有採用此方式，因為 Broker 決定發送訊息速率，很難適應所有消費者的消費速率
+
+## kafak 消費者工作流程
