@@ -166,3 +166,56 @@ Kafka 分區中的所有數據副本稱為**AR(Assigned Replicas)**。
 ISR，表示和 Leader 保持同步的 Follower 集合。如果 Follower 長時間未向 Leader 發送通訊請求或同步數據，則該 Followe 將從 ISR 移除，該時間閥值由 `replica.lag.time.max.ms` 參數決定，預設 30 秒。Leader 發生問題，會從 ISR 中選新的 Leader。
 
 OSR，表示 Follower 和 Leader 副本同步時，延遲過多的副本。
+
+### Follower 故障處理細節
+**LEO(Log End Offset) 每個副本的最後一個 offset，LEO 就是最新的 offset + 1**
+**HW(High Watermark) 所有副本中最小的 LEO**
+
+Leader 因為負責和生產者、消費者進行交互，而其它 Follower 都是和 Leader 進行數據同步。也因為 Leader 先接收數據所以資料比較多。ISR 中表明目前三台服務是正常啟動。而消費者最大能看到的數據是 `HW`。
+
+![image](https://user-images.githubusercontent.com/17800738/178088203-0fa0b592-5142-4c5d-a9ed-91722973abbe.png)
+
+1. Follower 故障
+1.1 Follower 發生故障會被臨時踢出 ISR
+1.2 該期間 Leader 和 Follower 持續接收數據
+1.3 待該故障 Fopllowe 恢復後，Followe 會讀取本地硬碟紀錄的上次的 HW，並將 Log 檔案高於 HW 部分截掉，從 HW 開始向 Leader 同步
+1.4 等該 Follower 的 LEO 大於等於該 Partition 的 HW，即 Follower 追上 Leader 後，即可重新加入 ISR
+
+1. Leader 故障
+1.1 Leader 發生故障後，從 ISR 中挑選一個新的 Leader
+1.2 為保證多個副本之間的數據一致性，其餘的 Follower 會先將各置的 log 檔案高於 HW (新的 Leader)的部分截掉，接著重新的 Leader 同步數據
+
+>在 Leader 故障中的 1.2 這只能保證副本之間數據一致性，並不能保證數據不丟失或不重複
+
+### 分區副本分配
+盡量按照均勻分配，以實現合理的附載均衡
+### 手動調整分區副本
+### Leader Partition 自動平衡
+`auto.leader.rebalance.enable` 預設為 true，Leader Partition 自動平衡。
+`leader.imbalance.per.broker.percentage` 預設 10%，每個 Broker 允許不平衡的 leader 的比率。如果每個 Broker 超過此值，控制器會觸發 Leader 的平衡。
+`leader.imbalance.check.interval.seconds` 預設是 300 秒，檢查 Leader 附載是否均衡的間隔時間。
+### 增加副本因子
+
+## 檔案儲存
+Topic 是邏輯上的概念，而 Partition 是物理上的概念，*每個 partition 對應於一個 Log 檔案*，該 Log 檔案中儲存的就是 Producer 生產的數據。*Producer 生產的數據不對被追加到該 Log 檔案末端*，為防止 Log 檔案過大導致數據定位效率低下，Kafka 採取了*分片*和*索引*機制，將每個 *partition 分為多個 segment*。每個 segment 包含，`.index` 檔案、`.log` 檔案和 `.timeindex` 等檔案。這些檔案位於一個資料夾下，該資料夾名稱規則是 `topic + 分區號碼`
+
+![image](https://user-images.githubusercontent.com/17800738/178090616-dced250d-4149-4769-b4d2-3ca86073a42f.png)
+
+> index 為稀疏索引，大約每往 log 寫入 4kb 數據，會往 index 檔案寫入一條索引。`log.index.interval.bytes` 預設為 4kb
+
+### 檔案清除策略
+Kafka 預設 Log 保存時間為 7 天，可以透過以下調整
+- log.retention.hours 最低優先級，預設 7 天
+- log.retention.minutes 分鐘
+- log.retention.ms 毫秒，最高優先級別
+- log.retention.check.interval.ms 檢查週期，預設 5 分鐘
+
+Kafka Log 清除策略有 `delete`、`compact` 兩種
+
+1. delete 刪除，將過期數據刪除
+- log.cleanup.policy = delete 所有數據啟用刪除策略
+**基於時間，預設是開啟**。以 `segment` 中所有紀錄中的最大時間戳作為該檔案時間戳(timeindex)
+**基於大小，預設為關閉**。超過設置的所有 Log 總大小，刪除最早的 segment。`log.retention.bytes` 預設 `-1`。
+
+2. compact 壓縮
+- log.cleanup.policy = compact 
