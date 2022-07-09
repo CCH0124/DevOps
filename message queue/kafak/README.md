@@ -243,6 +243,8 @@ Page Cache: Kafka 依賴 OS 提供的 Page Cache 功能。當上層有讀寫時�
 2. 每個分區的數據只能由一個消費者組中一個消費者消費(藍色範圍 Group)
 3. 一個消費者可以消費多個分區數據
 
+>__consumer_offsets 是一個內置 topic
+
 ### 消費者組
 Consumer Group(CG)消費者組，由多個 consumer 組成。形成一個消費者組的條件，是所有消費者的 groupid 相同。
 消費者組內每個消費者負責消費不同分區的數據，一個分區只能由一個群組內的消費者消費。
@@ -250,3 +252,19 @@ Consumer Group(CG)消費者組，由多個 consumer 組成。形成一個消費�
 
 ![image](https://user-images.githubusercontent.com/17800738/178097091-8a3518e4-9a91-4f86-a779-cb370dee844f.png)
 
+## 分區的分配以及再平衡
+
+### Range 以及再平衡
+partition.assognment.strategy=org.apache.kafka.client.consumer.RangeAssignor
+### RondRobin 以及再平衡
+partition.assognment.strategy=org.apache.kafka.client.consumer.RoundRobinAssignor
+### Sticky 以及再平衡
+partition.assognment.strategy=org.apache.kafka.client.consumer.StickyAssignor
+
+## offset 位移
+`__consumer_offsets` topic 裡面採用 key、value 方式儲存數據。key 是 `group.id + topic + 分區號`，value 就是當前 offset 值。每隔一段時間，kafka 內部會對該 topic 進行 `compact`，也就是每個 `group.id + topic + 分區號` 就保留最新數據。
+
+### 自動提交 offset
+相關參數
+- enable.auto.commit 是否自動提交 offset，預設是 true
+- auto.commit.interval.ms 自動提交 offset 的時間間隔，默認 5s
