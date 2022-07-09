@@ -236,3 +236,17 @@ Page Cache: Kafka 依賴 OS 提供的 Page Cache 功能。當上層有讀寫時�
 2. push 模式 Kafka 沒有採用此方式，因為 Broker 決定發送訊息速率，很難適應所有消費者的消費速率
 
 ## kafak 消費者工作流程
+
+![image](https://user-images.githubusercontent.com/17800738/178096551-67f65920-7e57-44c1-8c68-19287f49ea38.png)
+
+1. 每個消費者的 offset 由消費者提到系統保存
+2. 每個分區的數據只能由一個消費者組中一個消費者消費(藍色範圍 Group)
+3. 一個消費者可以消費多個分區數據
+
+### 消費者組
+Consumer Group(CG)消費者組，由多個 consumer 組成。形成一個消費者組的條件，是所有消費者的 groupid 相同。
+消費者組內每個消費者負責消費不同分區的數據，一個分區只能由一個群組內的消費者消費。
+消費者組之間相互不影響。所有的消費者都屬於某個消費者組，即消費者組是邏輯上的一個訂閱者。如下圖
+
+![image](https://user-images.githubusercontent.com/17800738/178097091-8a3518e4-9a91-4f86-a779-cb370dee844f.png)
+
