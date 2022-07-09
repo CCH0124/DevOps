@@ -268,3 +268,22 @@ partition.assognment.strategy=org.apache.kafka.client.consumer.StickyAssignor
 相關參數
 - enable.auto.commit 是否自動提交 offset，預設是 true
 - auto.commit.interval.ms 自動提交 offset 的時間間隔，默認 5s
+
+### 手動提交
+方式有兩種，`commitSync` 和 `commitAsync`。兩者共同點是，都會將*本次提交的一批數據最高的偏移量提交*；不同點是，同步提交阻塞當前執行緒，一值到提交成功，並且會自動失敗重試；而異步提交則每有失敗重試機制，故有機會提交失敗。
+- commitSync 必須等待 Offset 提交完畢，再去消費下一批數據
+- commitAsync 發送完提交 Offset 請求後，就開始消費下一批數據
+
+### 指定 Offset 消費
+`auto.offset.reset=earliest|latest|none` 預設是 `latest`。
+- earliest 從頭開始消費，自動將偏移量重置為最早偏移量
+- latest 自動將偏移量重置為最新偏移量
+- none 如過未找到消費者組的先前偏移量，則向消費者拋出異常
+
+![image](https://user-images.githubusercontent.com/17800738/178113188-813fa08a-5d83-4903-b4ce-36ab37dbbc31.png)
+
+### 指定時間消費
+
+### 數據積壓
+1. 如果是 kafka 消費能力不足，可以考慮*增加 topic 的分區數*，並且同時提升消費者組(CG)數量，`消費者數 = 分區數`。
+2. 如果是下游數據處理不及時，*提高每批次拉取的數量*。批次拉取數據過少(拉取數據/處理時間<生產速度)，處理數據小於生產數據，導致積壓。
