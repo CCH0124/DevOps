@@ -48,9 +48,9 @@ spec:
   triggers: # 5
     - type: kafka
       metadata:
-        bootstrapServers: one-node-cluster.redpanda:9092
-        consumerGroup: a
-        topic: test-topic
+        bootstrapServers: my-cluster-kafka-bootstrap.default.svc.cluster.local:9092
+        consumerGroup: event
+        topic: event
         lagThreshold: '5'
 ```
 
