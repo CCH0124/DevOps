@@ -35,6 +35,13 @@ mongos> db.gnss.deleteMany({ timestamp: { $lt: 1652971320000}}) # 刪除該 coll
 ```
 ## Add User
 
+登入
 ```bash
+mongosh -u USERNAME -p PWD --authenticationDatabase admin 
+```
+
+透過 use 切換 db，在建立使用者
+```bash
+use shop
 db.createUser({ user: "test", pwd: "00000000", roles: [{ role: "readWrite", db: "shop" },{ role: "read", db: "aiot" }]})
 ```
