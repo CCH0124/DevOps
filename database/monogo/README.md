@@ -45,3 +45,5 @@ mongosh -u USERNAME -p PWD --authenticationDatabase admin
 use shop
 db.createUser({ user: "test", pwd: "00000000", roles: [{ role: "readWrite", db: "shop" },{ role: "read", db: "aiot" }]})
 ```
+
+- [Mongo RBAC](https://www.bmc.com/blogs/mongodb-role-based-access-control/)
