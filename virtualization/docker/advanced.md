@@ -24,3 +24,10 @@
 ```
 
 port 部分這樣使服務可以，自動將兩個實例映射 8080、8081 port 出來
+
+
+如何在一般的 docker-compose 生效上面的進階用法，如下使用 `--compatibility` 方式
+
+```bash
+docker-compose --compatibility up -d 
+```
