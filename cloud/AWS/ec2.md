@@ -75,6 +75,7 @@ A Spot Instance is an instance that uses spare EC2 capacity that is available fo
   - 請求 Spot 執行個體。當容量可用時，Amazon EC2 會履行您的請求。Spot 執行個體請求為一次性或持久性。與請求相關聯的 Spot 執行個體中斷之後，Amazon EC2 會自動重新提交持續的 Spot 執行個體請求。
   - 定義 *max spot price*，如果 *current spot price < max* 並獲取一個執行個體
   - 每小時  spot 價格根據報價和容量而變化
+  - 當前 spot 價格 > 最高價格，可以選擇停止或終止執行個體，並有 2 分鐘的寬限期
 - EC2 instance rebalance recommendation
   - Amazon EC2 發出執行個體重新平衡建議訊號，以通知您 Spot 執行個體的中斷風險升高。此訊號讓您有機會在現有或新的 Spot 執行個體上主動重新平衡工作負載，而無需等待兩分鐘的 Spot 執行個體中斷通知。
 - Spot Instance interruption
@@ -82,5 +83,26 @@ A Spot Instance is an instance that uses spare EC2 capacity that is available fo
  
 - [Key differences between Spot Instances and On-Demand Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-spot-instances.html#Key%20differences%20between%20Spot%20Instances%20and%20On-Demand%20Instances)
 
+**[Terminate Spot Instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html)**
+
+![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/spot_lifecycle.png)
 
 
+- open
+  - 請求正等待完成
+- active
+  - 請求已完成，並具有關聯的 Spot 執行個體
+- failed
+  - 請求具有一個或多個無效的參數
+- closed
+  - Spot 執行個體已中斷或終止
+- disabled
+  - 已停止 Spot 執行個體
+- cancelled
+  - 已取消請求，或請求已過期
+
+![](https://docs.aws.amazon.com/images/AWSEC2/latest/UserGuide/images/spot_request_states.png)
+
+- You can only cancel Spot Instance requests that are open, active, or disabled.
+- Cancelling a Spot Request does not terminate instances
+- You must first cancel a Spot Request, and then terminate the associated Spot Instances
