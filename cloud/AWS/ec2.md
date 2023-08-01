@@ -106,3 +106,7 @@ A Spot Instance is an instance that uses spare EC2 capacity that is available fo
 - You can only cancel Spot Instance requests that are open, active, or disabled.
 - Cancelling a Spot Request does not terminate instances
 - You must first cancel a Spot Request, and then terminate the associated Spot Instances
+
+### [Spot Fleets](https://docs.aws.amazon.com/zh_tw/AWSEC2/latest/UserGuide/work-with-spot-fleets.html)
+
+
