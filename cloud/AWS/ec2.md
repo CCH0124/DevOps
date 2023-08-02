@@ -109,4 +109,5 @@ A Spot Instance is an instance that uses spare EC2 capacity that is available fo
 
 ### [Spot Fleets](https://docs.aws.amazon.com/zh_tw/AWSEC2/latest/UserGuide/work-with-spot-fleets.html)
 
+- Spot Fleets allow us to automatically request Spot Instances with the lowest price
 
