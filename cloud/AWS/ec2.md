@@ -111,3 +111,14 @@ A Spot Instance is an instance that uses spare EC2 capacity that is available fo
 
 - Spot Fleets allow us to automatically request Spot Instances with the lowest price
 
+### [Elastic IP]
+- When you stop and then start an EC2 instance, it changes its public IP
+- With an Elastic IP address, you can mask the failure of an instance or software by rapidly remapping the address to another instance in your account.
+- You don’t pay for the Elastic IP if it’s attached to a server
+- You pay for the Elastic IP if it’s not attached to a server
+- You can only have 5 Elastic IP in your account (you can ask AWS to increase that).
+
+How you can avoid using Elastic IP:
+- Always think if other alternatives are available to you
+- You could use a random public IP and register a DNS name to it
+- Or use a Load Balancer with a static hostname
