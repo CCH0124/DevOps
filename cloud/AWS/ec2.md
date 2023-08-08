@@ -147,10 +147,41 @@ How you can avoid using Elastic IP:
 - IAM 權限正確設置
 - 由 CloudWatch 代理程式收集指標的預設命名空間是 `CWAgent`，不過您可以在設定代理程式時指定不同的命名空間
 
+![image](https://github.com/CCH0124/DevOps/assets/17800738/44d0a61d-389a-4894-aead-a96e6563a144)
+
 ### [Unified CloudWatch Agent – procstat Plugin](https://docs.aws.amazon.com/zh_tw/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-procstat-process-metrics.html)
 ## Status Checks
 - 自動檢查識別硬體和軟體問題
 - **System Status Checks**
   - 監控 AWS 系統問題(軟體/硬體/系統電力)
-  - 
+  - 檢查 `Personal Health Dashboard` 以了解 AWS 對實例主機進行的任何計劃的關鍵維護
+  - 透過對實例停機並遷移至新主機開機
 - **Instance Status Checks**
+  - 監控實例軟體、網路配置
+  - 重新啟動實例或是修正配置來解決
+### CW Metrics & Recovery
+- CloudWatch Metrics (1 minute interval)
+  - StatusCheckFailed_System
+  - StatusCheckFailed_Instance
+
+當問題發生可以透過以下方式進行修復
+
+- CloudWatch Alarm 
+  - 透過 SNS 發送通知
+  - 使用相同的私有/公共 IP、EIP、元數據和 Placement Group 恢復 EC2 實例
+- Auto Scaling Group
+  - 設置 min/max/desired 為 1 以恢復實例，但*不會保留相同的私有和 elastic IP*
+  
+![image](https://github.com/CCH0124/DevOps/assets/17800738/c77a3979-1355-4b54-8a98-831b2c8c6dba)
+
+## [EC2 Hibernate](https://docs.aws.amazon.com/zh_tw/AWSEC2/latest/UserGuide/instance-hibernate-overview.html)
+- 可以透過 stop、terminate 對 EC2 實例進行操作
+  - stop: EBS 上的數據在下次啟動時保持之前狀態
+  - terminate: 任何 EBS 卷都會丟失
+- start 動作則會對應以下
+  -  OS boot 且 EC2 定義的 User Data script 被運行
+  -  OS boot 啟動
+  -  接著應用程式啟動，過程中這可能都需要等待
+- EC2 Hibernate
+  - 
+![](https://docs.aws.amazon.com/zh_tw/AWSEC2/latest/UserGuide/images/hibernation-flow.png)
