@@ -142,3 +142,43 @@
 |CSP|Storage|
 |CSP|Networking|
 
+## Deployment Models
+
+**Public Cloud**
+
+所有東西都是使用雲供應商所提供的服務
+
+**Private Cloud**
+
+服務都是來自地端，像是使用 *OpenStack*，這屬於 *On-premise*
+
+**Hybrid**
+
+公有雲與私有雲整合
+
+**Cross-Cloud**
+
+使用多個雲供應商，混合雲。
+像是透過 Azure ACR 將其容器部署至 EKS 或是 GKE
+
+## Cloud Architecture Terminologies
+
+**Availability**
+
+確保服務保持可用的能力，通常稱為 *Highly Available(HA)*
+
+**Scalability**
+
+能夠快速或不受阻礙的擴張
+
+**Elasticity**
+
+收縮和成長以滿足需求的能力
+
+**Fault Tolerance**
+
+防止故障的能力
+
+**Disater Recovery**
+
+可以進行災難復原，從不可用的環境中恢復的能力，也可稱為 *Highly Durable(DR)*
