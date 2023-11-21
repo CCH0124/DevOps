@@ -80,5 +80,65 @@
 >開發人員可以輕鬆在雲端上建立應用程式，而無需擔心底層的所有內容
 
 **IaaS Infrastructure as a Service**
+
 雲端 IT 的基本構建模組。提供對網路功能、運算和資料儲存空間的存取。無需擔心 IT 人員、資料中心和硬體。像是 Azure、AWS、GCP
+
+## Types of Cloud Computing Responsibilities
+
+**On-Premise**
+
+| Customer/ Cloud Service Provider (CSP) | Level |
+|---|---|
+|Customer|Application|
+|Customer|Data|
+|Customer|Runtime|
+|Customer|Middleware|
+|Customer|OS|
+|Customer|Virtualization|
+|Customer|Servers|
+|Customer|Storage|
+|Customer|Networking|
+
+
+**Infrastructure as a Service**
+
+| Customer/ Cloud Service Provider (CSP) | Level |
+|---|---|
+|Customer|Application|
+|Customer|Data|
+|Customer|Runtime|
+|Customer|Middleware|
+|Customer|OS|
+|CSP|Virtualization|
+|CSP|Servers|
+|CSP|Storage|
+|CSP|Networking|
+
+**Platform as a Service**
+
+| Customer/ Cloud Service Provider (CSP) | Level |
+|---|---|
+|Customer|Application|
+|Customer|Data|
+|CSP|Runtime|
+|CSP|Middleware|
+|CSP|OS|
+|CSP|Virtualization|
+|CSP|Servers|
+|CSP|Storage|
+|CSP|Networking|
+
+**Software as a Service**
+
+| Customer/ Cloud Service Provider (CSP) | Level |
+|---|---|
+|CSP|Application|
+|CSP|Data|
+|CSP|Runtime|
+|CSP|Middleware|
+|CSP|OS|
+|CSP|Virtualization|
+|CSP|Servers|
+|CSP|Storage|
+|CSP|Networking|
 
