@@ -182,3 +182,57 @@
 **Disater Recovery**
 
 可以進行災難復原，從不可用的環境中恢復的能力，也可稱為 *Highly Durable(DR)*
+
+
+## High Availability
+
+運行的應用程式跨多個 *Availability Zones*，確保某個 AZ 發生問題時，還能保持運作。
+
+透過 **Azure Load Balancer** 可以幫我們對多個 AZ 進行附載均衡，其可以將流量均勻分配到一個或多個資料中心的多台伺服器，資料中心或伺服器變得不可用且運作狀況不佳，負載平衡器僅將流量路由到具有伺服器的可用資料中心
+
+
+## High Scalability
+
+根據記憶體和運算能力不斷增長的需求來增加硬體資源容量的能力。調高記憶體或是 CPU 等。主要有兩種擴展方式
+
+- Vertical Scaling (Scaling Up)
+  - 更新更大的伺服器
+- Horizonal Scaling (Scaling Out)
+  - 增加相同規格機器
+ 
+## High Elasticity
+
+根據記憶體和運算能力的需求自動增加或減少資源的能力，與 *Scalability* 不同的是這是*自動化*的。
+
+- Horizonal Scaling
+  - Scaling Out
+  - Scaling In
+ 
+## High Durability
+
+避免資料遺失，且可以進行復原。
+
+- 有進行備份 ?
+- 能多快復原
+- 備份都是持續在運作 ?
+- 如何確保目前的即時資料不會被損壞 ?
+
+## The Evolution of Computin
+
+dedicated -> VM -> Containers -> Functions
+
+**dedicated**
+
+- 實體機器，完全由單一客戶使用
+- 要規劃資源，避免超出預算對於浪費資源
+- 更新是昂貴的
+- 被作業系統限制
+- 多個服務被安裝至同一個服務器上，在資源共享上可能會有衝突
+
+**VM**
+
+- 可以從一台伺服器上運行多個虛擬機器，用於實際運行虛擬機的技術被稱為 *Hypervisor*
+- 共享實體機具有多個客戶的伺服器，這通常是一件好事，只需支付伺服器成本的一小部分
+- 仍然會為未充分利用的伺服器資源而支付過高的費用
+- 將受到 *Guest Operating System* 的限制
+- 多個服務被安裝至同一個虛擬機上，在資源共享上可能會有衝突
