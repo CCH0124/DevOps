@@ -1,6 +1,7 @@
 ## Computing Services
 
 **Azure Virtual Machine**
+
 Windows 或是 Linux 的虛擬機。可以選擇 OS、Memory、CPU、Storage 等。硬體是與其它客戶共享，但也可專用。
 
 **Azure Container Instances**
@@ -20,10 +21,11 @@ Windows 或是 Linux 的虛擬機。可以選擇 OS、Memory、CPU、Storage 等
 - 事件驅動的無伺服器計算，只要上傳較小邏輯的程式碼。
 - 無需考慮伺服器或配置任何內容，只需為該程式碼運行的時間付費
 
-  **Azure Batch**
-  可以規劃時間表，並行執行 100 多個作業的批次計算工作負載，可以搭配 spot VM 來省下一些成本
+**Azure Batch**
+  
+可以規劃時間表，並行執行 100 多個作業的批次計算工作負載，可以搭配 spot VM 來省下一些成本
 
-  >spot VM 可以想成是*低優先級虛擬機器*
+>spot VM 可以想成是*低優先級虛擬機器*
 
 
 ## Storage Service
