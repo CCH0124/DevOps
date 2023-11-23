@@ -250,3 +250,48 @@ dedicated -> VM -> Containers -> Functions
 - 上傳程式碼並選擇運行的記憶體和時間
 - 只對程式碼和資料負責
 - 冷啟動，當它們不運行時，就沒有運行
+
+
+## Regions and Geographies
+- 一個區域(region)是多個資料中心的分組 (Availability Zones)
+- 地理位置(Geographies)，是一個由兩個或多個區域(region)組成的，這些區域保留資料駐留(data residency)和合規性(compliance boundaries)
+
+Geographies 位置
+- United States
+- Canada
+- etc.
+
+## Paired Regions
+
+每個 Azure 區域都與同一地理位置內的另一個區域配對，共同構成區域對。某些 Azure 服務會依賴配對區域進行災難復原。
+
+|Country| Region |Paired Region|
+|---|---|---|
+|Canada|East US|West US|
+|North America|East US|West US|
+|Germany|Germany Central|Germany Northeast|
+
+Azure Geo-redundant Storage(GRS) 是一個例子，可以自動將資料複製到次要區域確保資料足夠可用。
+
+## Availability Zone
+
+- *Availability Zone(AZ)* 由一個或多個資料中心組成的實體位置
+- 一個區域(Region) 通常有 3 個 AZ
+
+## Fault and Update Domains
+
+Azure 區域中 *Availability Zone(AZ)* 是 *fault domain* 和 *update domain* 的組合。
+
+**Fault Domain**
+fault domain 是硬體的邏輯分組，以避免可用區內出現單點故障。基本上，它是一組共享公共電源和網路交換器的虛擬機器。
+
+這樣做的原因是，如果資料中心的一部分發生故障，那麼其他伺服器將被關閉，比方說，資料中心和一個特定區域內發生火災，它不會影響其他硬體正在運行，那麼就可以 *update domain* 。
+
+**Update Domain**
+
+指 Azure 需要將更新套用到底層硬體和軟體時。問題是，由於 Azure 正在更新它們，它會使這些電腦離線。
+
+
+**Availability Set**
+
+所以，*fault domain* 和 *update domain* 的工作方式是使用 *Availability Set*。*Availability Set* 是一個邏輯分組，可以在 Azure 中使用它來確保放置在 *Availability Set* 中的 VM 位於不同的故障 *Update Domain*，以避免停機。
