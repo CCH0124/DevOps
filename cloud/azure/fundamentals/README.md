@@ -63,3 +63,84 @@ Windows 或是 Linux 的虛擬機。可以選擇 OS、Memory、CPU、Storage 等
 是一個*集中式存儲庫*，當處理來自多個不同來源的大數據時，它允許儲存任何規模的所有結構化和非結構化數據。
 
 ## Database Services
+
+**Azure Cosmos DB**
+
+完全託管的 *NoSQL* 資料庫。它為*擴展*而設計，保證了 99.999% 的可用性
+
+**Azure SQL Database**
+
+完全託管的 *MS SQL* 資料庫，自動縮放、完整性、可用性等
+
+**Azure Database for MySQL/PSQL/MariaDB**
+
+完全託管且可擴展，有高可用和安全性等特性。
+
+**SQL Server on VMs**
+
+可以在虛擬機器上安裝 SQL Server。
+
+**Azure Synapse Analytics(Azure SQL Data Warehouse)**
+
+一個完全託管的資料倉庫，在各個規模層級上都具有整體安全性，無需額外成本
+
+**Azure Database Migration Service**
+
+無需更改應用程式程式碼即可將資料庫遷移到雲端。 
+
+**Azure Cache for Redis**
+
+需要記憶體緩存，即使用開源 Redis，則可以使用它。快取通常和靜態資料使用減少應用程式獲取資料的延遲
+
+**Azure Table Storage**
+
+是一個 NoSQL 資料庫。獨立於任何模式的非結構化資料。
+
+
+## Application Integration Services
+
+**Azure Notification Hub**
+
+使用 pub/sub 模式，用於從任何後端向任何平台發送推播通知
+
+**Azure API Apps**
+
+API Gateway，可以在雲端中快速建立且使用 API，路由 API 到 Azure 服務像是 functions 或是 containers。
+
+**Azure Service Bus**
+
+可靠的雲端訊息傳遞即服務，可實現簡單的混合整合
+
+**Azure Stream Analytics**
+
+無伺服器的即時分析，從雲端到邊緣的服務。
+
+**Azure Logic Apps**
+
+排程、自動化編排任務、業務流程和工作流程，並與企業、SaaS、和應用程式整合。
+
+**Azure API Management**
+
+這是一個適用於 API 的混合多雲管理平台，適用於所有環境。將其放在現有 API 前面以添加額外功能，基本上是你的 API 的代理。
+
+## Developer and Mobile Tools
+
+**Azure SignalR Service**
+
+*Real-Time Messaging* 在應用程式中添加即時 Web 功能。它就像 Pusher 一樣。
+
+
+**Azure App Service**
+
+簡易的部署和擴充 Web 應用程式，有 .Net、Node、Java、Python 等。開發者專注於建置他們的應用程式，不用關心底層，有點像是 Heroku 這樣。
+
+**Visual Studio(Microsoft-owned)**
+
+*code edit*，基本上是一個 IDE
+
+**Xamarin**
+
+*行動應用程式框架*，用於建立強大且可擴展的行動應用程式使用 .net。
+
+## Azure DevOps Servicers
+
