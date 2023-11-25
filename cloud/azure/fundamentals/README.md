@@ -163,3 +163,53 @@ API Gateway，可以在雲端中快速建立且使用 API，路由 API 到 Azure
   - 為開發人員創建開發測試環境的簡單方法
  
 ## Azure Resource Manager(ARM) 
+
+允許透過 JSON 模板以程式設計方式建立 Azure 資源。
+
+## vNet and Subnet
+
+**Virtual Network(vNet)** 是一個 Azure 網路中邏輯上隔離的部分，可以在其中啟動 Azure 資源。建立時需定義要使用的一定數量 IP 和 CIDR 範圍。如下圖
+
+![](https://www.oreilly.com/api/v2/epubs/9781788991735/files/assets/5c3360aa-ebf1-45ef-9bbd-3a52ded71f39.png) From oreilly
+
+`10.2.0.0/16` 是 vNet，再從該 vNet 切分網路給下面的資源。`10.2.0.0/16` 的 CIDR 範圍可有 65536(256*256) 個 IP 位址。
+
+**Subnets** 它是將 IP 網路邏輯劃分為更小的網段，分成更小的 IP 範圍。當建立子網路時，它們必須更小。以上圖來說 `10.2.0.0/24` 和 `10.2.1.0/24` 這都是 vNet 下的 Subnet。
+
+Subnet 需要比 vNet 更小的 CIDR 範圍切割， `10.2.0.0/24` 為例其只有 256 個 IP 位置可用。
+
+**Public Subnet** 可以存取互聯網。
+
+**Private Subnet**  無法存取互聯網。
+
+## Cloud-Native Networking Services
+
+**Azure DNS**
+
+提供了超快的 DNS 回應和超高的網域可用性
+
+**Azure Virtual Network (vNET)**
+
+是一個 Azure 網路中邏輯上隔離的部分，可以在其中啟動 Azure 資源。
+
+**Azure Load Balancer**
+
+OSI 第四層的附載均衡
+
+**Azure Application Gateway**
+
+OSI 第七層的附載均衡，能夠整合 Web Application Firewll
+
+**Network Security Group**
+
+保護子網路(subnet) 層級的虛擬防火牆。限制 IP 連接或是 Port 連接等
+
+## Enterprise/Hybrid Networking Services
+
+**Azure Front Door**
+
+這是一個可擴展且安全的入口點，用於快速交付你的全域應用程式，例如:確保你有一個從外部進入 Azure 的安全入口點
+
+**Azure Express Route**
+
+本機(on-premise)與 Azure 雲端之間的連線。它可以在每秒 50 Mbps 到每秒 10 Gbps。*如果從地端資料到 Azure 要有很快速的連接，可以使用此服務*。
