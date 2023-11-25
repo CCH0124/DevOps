@@ -144,3 +144,22 @@ API Gateway，可以在雲端中快速建立且使用 API，路由 API 到 Azure
 
 ## Azure DevOps Servicers
 
+**Azure DevOps**
+
+計劃更明確、協作並更快地交付。
+
+- Azure Boards
+  - 敏捷工具更快的用戶提供價值以規劃、追蹤和討論整個團隊的工作
+- Azure Pipelines
+  - 建置、測試和部署適用於任何語言、平台和雲平台的 CI/CD
+  - 連接到 GitHub 或任何其他供應商並持續部署
+- Azure Repo
+  - 取得無限的、雲端託管的私人 Git 儲存庫，並透過拉取請求和進階檔案管理協作來建立更好的程式碼維護
+- Azure Test Plans
+  - 使用手動和探索性測試工具充滿信心地進行測試和交付
+- Azure Artifacts
+  - 建立、託管並與團隊共用套件，只需按一下即可將工件(Artifacts)新增至 CI/CD 管線
+- Azure DevTest Labs
+  - 為開發人員創建開發測試環境的簡單方法
+ 
+## Azure Resource Manager(ARM) 
