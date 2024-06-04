@@ -8,7 +8,7 @@
 - Private Link 可將私人端點對應至 Azure 資源的單一執行個體，藉以降低資料遭到外流的風險
 
 **知識檢查**
-假設公司想要讓其 Azure 虛擬網路中的用戶端能對特定 Azure 資源進行安全且非公用的存取。 IT 人員應將下列哪一項技術新增至其虛擬網路？Azure private endpoint
-假設公司想要讓使用者能透過 Azure 虛擬網路對 Azure 資源進行私人存取。 Azure 私人端點如何對應 Azure 資源以提供私人存取？ 藉由使用來自 Azure 虛擬網路之子網路的 IP 位址。
-假設公司想要讓使用者能透過 Azure Private Link 服務對自訂 Azure 服務進行私人存取。 下列何者是實作 Private Link 服務所需的技術？ Azure Standard Load Balancer
+1. 假設公司想要讓其 Azure 虛擬網路中的用戶端能對特定 Azure 資源進行安全且非公用的存取。 IT 人員應將下列哪一項技術新增至其虛擬網路？`Azure private endpoint`
+2. 假設公司想要讓使用者能透過 Azure 虛擬網路對 Azure 資源進行私人存取。 Azure 私人端點如何對應 Azure 資源以提供私人存取？ `藉由使用來自 Azure 虛擬網路之子網路的 IP 位址。`
+3. 假設公司想要讓使用者能透過 Azure Private Link 服務對自訂 Azure 服務進行私人存取。 下列何者是實作 Private Link 服務所需的技術？ `Azure Standard Load Balancer`
  
