@@ -6,6 +6,9 @@
 ## [Azure Private Link](https://learn.microsoft.com/zh-tw/training/modules/introduction-azure-private-link/)
 - 連線是單向的，這表示只有用戶端可以連線至私人端點介面。 如果某個 Azure 服務對應至私人端點介面，該服務的提供者就無法連線至 (甚至無法感知) 私人端點介面
 - Private Link 可將私人端點對應至 Azure 資源的單一執行個體，藉以降低資料遭到外流的風險
+- Azure Private Link 包含兩個不同服務
+  - Private Endpoints 
+  - Private Link Services
 
 **知識檢查**
 1. 假設公司想要讓其 Azure 虛擬網路中的用戶端能對特定 Azure 資源進行安全且非公用的存取。 IT 人員應將下列哪一項技術新增至其虛擬網路？`Azure private endpoint`
