@@ -12,3 +12,5 @@
 2. 假設公司想要讓使用者能透過 Azure 虛擬網路對 Azure 資源進行私人存取。 Azure 私人端點如何對應 Azure 資源以提供私人存取？ `藉由使用來自 Azure 虛擬網路之子網路的 IP 位址。`
 3. 假設公司想要讓使用者能透過 Azure Private Link 服務對自訂 Azure 服務進行私人存取。 下列何者是實作 Private Link 服務所需的技術？ `Azure Standard Load Balancer`
  
+**其它文章**
+- [medium | demystifying-azure-private-link-private-endpoints-and-service-endpoints](https://medium.com/@mbnarayn/demystifying-azure-private-link-private-endpoints-and-service-endpoints-7b309ba96fa1)
