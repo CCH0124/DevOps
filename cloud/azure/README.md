@@ -17,3 +17,4 @@
  
 **其它文章**
 - [medium | demystifying-azure-private-link-private-endpoints-and-service-endpoints](https://medium.com/@mbnarayn/demystifying-azure-private-link-private-endpoints-and-service-endpoints-7b309ba96fa1)
+- [opstergo | private-link](https://www.opstergo.com/blog/azure-private-link-private-link-service-private-endpoint-virtual-network-service-endpoint-what-is-the-difference)
