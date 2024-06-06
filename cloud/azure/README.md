@@ -15,7 +15,7 @@
 2. 假設公司想要讓使用者能透過 Azure 虛擬網路對 Azure 資源進行私人存取。 Azure 私人端點如何對應 Azure 資源以提供私人存取？ `藉由使用來自 Azure 虛擬網路之子網路的 IP 位址。`
 3. 假設公司想要讓使用者能透過 Azure Private Link 服務對自訂 Azure 服務進行私人存取。 下列何者是實作 Private Link 服務所需的技術？ `Azure Standard Load Balancer`
  
-**其它文章**
+**其它資源**
 - [medium | demystifying-azure-private-link-private-endpoints-and-service-endpoints](https://medium.com/@mbnarayn/demystifying-azure-private-link-private-endpoints-and-service-endpoints-7b309ba96fa1)
 - [opstergo | private-link](https://www.opstergo.com/blog/azure-private-link-private-link-service-private-endpoint-virtual-network-service-endpoint-what-is-the-difference)
 
@@ -40,3 +40,7 @@ Azure Data Factory 是雲端式資料整合服務，其設計目的是要解決�
 |---|---|
 |巨量資料社群	|這個社群依賴能管理大量多樣化資料的技術。 對他們來說，Azure Data Factory 提供了在雲端中建立和執行管線的方法。 這些管線可以同時存取雲端和內部部署資料服務。 這些管線通常會與 Azure Synapse Analytics、Azure Blob、Azure Data Lake、Azure HDInsight、Azure Databricks 和 Azure Machine Learning 等技術一同使用。|
 |關聯式資料倉儲社群|	這個什群通常依賴如 Microsoft SQL Server 等的技術。 SQL Server Integration Services (SSIS) 通常用來建立 SSIS 套件。 對此社群來說，Azure Data Factory 讓他們能在 Azure 上執行 SSIS 套件，並藉此存取雲端和內部部署資料服務。|
+
+**其它資源**
+
+- [ Adam Marczak Azure for Everyone | Azure Data Factory Self-hosted Integration Runtime Tutorial | Connect to private on-premises network ](https://www.youtube.com/watch?v=weiHOeje-QA&ab_channel=AdamMarczak-AzureforEveryone)
