@@ -18,3 +18,25 @@
 **其它文章**
 - [medium | demystifying-azure-private-link-private-endpoints-and-service-endpoints](https://medium.com/@mbnarayn/demystifying-azure-private-link-private-endpoints-and-service-endpoints-7b309ba96fa1)
 - [opstergo | private-link](https://www.opstergo.com/blog/azure-private-link-private-link-service-private-endpoint-virtual-network-service-endpoint-what-is-the-difference)
+
+## [Azure Data Factory](https://learn.microsoft.com/zh-tw/training/modules/intro-to-azure-data-factory/)
+Azure Data Factory 是一個雲端式 ETL 與資料整合服務，可協助您建立以資料驅動的工作流程並藉此：
+- 協調資料移動
+- 大規模轉換資料
+
+Azure 提供數種技術，可用來協助組織的資料分析。 包括
+- Azure Synapse Analytics
+- Azure Blob 儲存體
+- Azure Data Lake Storage
+- Azure Data Lake Analytics
+- Azure Analysis Services
+- Azure HDInsight
+- Azure Databricks
+- Azure Machine Learning
+
+Azure Data Factory 是雲端式資料整合服務，其設計目的是要解決兩個特定社群的需求
+
+|社群	|社群需求的描述|
+|---|---|
+|巨量資料社群	|這個社群依賴能管理大量多樣化資料的技術。 對他們來說，Azure Data Factory 提供了在雲端中建立和執行管線的方法。 這些管線可以同時存取雲端和內部部署資料服務。 這些管線通常會與 Azure Synapse Analytics、Azure Blob、Azure Data Lake、Azure HDInsight、Azure Databricks 和 Azure Machine Learning 等技術一同使用。|
+|關聯式資料倉儲社群|	這個什群通常依賴如 Microsoft SQL Server 等的技術。 SQL Server Integration Services (SSIS) 通常用來建立 SSIS 套件。 對此社群來說，Azure Data Factory 讓他們能在 Azure 上執行 SSIS 套件，並藉此存取雲端和內部部署資料服務。|
