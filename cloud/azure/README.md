@@ -44,3 +44,5 @@ Azure Data Factory 是雲端式資料整合服務，其設計目的是要解決�
 **其它資源**
 
 - [ Adam Marczak Azure for Everyone | Azure Data Factory Self-hosted Integration Runtime Tutorial | Connect to private on-premises network ](https://www.youtube.com/watch?v=weiHOeje-QA&ab_channel=AdamMarczak-AzureforEveryone)
+- [microsoft | azure | concepts-integration-runtime](https://learn.microsoft.com/zh-tw/azure/data-factory/concepts-integration-runtime)
+- [microsoft | azure | create-self-hosted-integration-runtime](https://learn.microsoft.com/zh-tw/azure/data-factory/create-self-hosted-integration-runtime?tabs=data-factory#configure-a-self-hosted-ir-via-ui)
