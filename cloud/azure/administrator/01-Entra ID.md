@@ -66,3 +66,9 @@ Microsoft Entra ID 提供三種版本：Free、Premium P1 和 Premium P2。各�
   - 一個 Tenant 可以有多個訂閱(建立資源時將會選擇哪個訂閱)
   - 一個 Tenant 中可以有多個 Account 的擁有者
 - Resource Group
+
+## Administrative Units
+
+管理單位會將角色中的權限限制為您所定義之組織的任何部分
+
+[microsoft | administrative-units](https://learn.microsoft.com/zh-tw/entra/identity/role-based-access-control/administrative-units)
