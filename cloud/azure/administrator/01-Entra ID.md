@@ -66,6 +66,9 @@ Microsoft Entra ID 提供三種版本：Free、Premium P1 和 Premium P2。各�
   - 一個 Tenant 可以有多個訂閱(建立資源時將會選擇哪個訂閱)
   - 一個 Tenant 中可以有多個 Account 的擁有者
 - Resource Group
+  - 在 Subscription 中資源的集合
+  - 資料夾結構
+  - 所有資源必須屬於一個 Resource Group
 
 ## Administrative Units
 
