@@ -1,0 +1,17 @@
+## Cost Management
+- Analysis
+- Alert
+- Budget
+- Advisor
+
+## Resource Locks
+- Delete: 允需修改資源，防止鎖定的 Resource group 內的刪除
+- Read-Only: 唯讀
+
+## Azure Policy
+- 可以選擇是否強制執行
+
+## tags
+
+## move resource
+- move to resource group/subscription/region
