@@ -1,0 +1,13 @@
+為了讓使用者能夠使用 Azure 資源，需要權限。
+
+- 最小權限原則
+
+## BRAC 好處
+- 一個抽象的管理，簡化組織中的權限管理
+
+
+Blob 來說可以透過啟用 `Default to azure active Directory authorization in the azure portal` 來進行 RBAC 控管。SAS 方式將會被受限
+
+Azure 權限可以基於 account 或是 Group 進行賦予。
+
+AZure User 資源中， Assigned roles 和 Azure role assigment 可以知道該使用被分配的角色
