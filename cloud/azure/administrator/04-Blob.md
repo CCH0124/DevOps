@@ -38,3 +38,8 @@ Snapshots 沒有過期期限，而軟刪除則有。
  - 針對版本
    - move to cool、cold etc
    - delete
+  
+## Log Analytics
+- 設定 Alert (用量大於 10 GB) 等
+- 延遲
+- 將 Blob write/Read/Delete/Transaction 等紀錄，並發送至 Log Analytics、Storage Account Archive、event hub 等
