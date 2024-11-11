@@ -47,3 +47,4 @@ Snapshots 沒有過期期限，而軟刪除則有。
 ## Manage data in Azure storage
 - import/export jobs
 - azCopy
+- storage browser
