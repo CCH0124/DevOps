@@ -48,3 +48,14 @@ Snapshots 沒有過期期限，而軟刪除則有。
 - import/export jobs
 - azCopy
 - storage browser
+
+## Azure files
+- Azure file sync
+ - 地端可以下載該服務並與雲端 azure file sync 資源同步
+- Premium Storage
+ - Block blobs
+ - PAge blobs
+   - 比 Blocl blobs 大
+   - 用於儲存不須頻繁訪問或修改的檔案
+  - File share
+  - 會沒有 GRS 等級的冗於 
